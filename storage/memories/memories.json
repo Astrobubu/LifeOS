@@ -1,0 +1,89 @@
+[
+  {
+    "id": "80f8f92a-4d46-4f6a-9fb1-e875ebaaa586",
+    "content": "Ahmed Hassan is the founder of Constant Labs and the website is constantlabs.ai",
+    "type": "fact",
+    "importance": 7,
+    "tags": [
+      "founder",
+      "Constant Labs",
+      "website"
+    ],
+    "created_at": "2025-11-27T17:29:21.526441",
+    "metadata": {}
+  },
+  {
+    "id": "5e335abc-79c5-4381-80f4-0a5d3510d378",
+    "content": "User is associated with Constant Labs, and Ahmed Hassan is the founder. The website for Constant Labs is constantlabs.ai.",
+    "type": "fact",
+    "importance": 7,
+    "tags": [
+      "Constant Labs",
+      "Ahmed Hassan",
+      "website"
+    ],
+    "created_at": "2025-11-27T17:41:29.533109",
+    "metadata": {}
+  },
+  {
+    "id": "a630ea07-b683-434a-9fc9-a14ae138886e",
+    "content": "Ahmed Hassan with an A and one S not two S's",
+    "type": "preference",
+    "importance": 8,
+    "tags": [
+      "name",
+      "spelling"
+    ],
+    "created_at": "2025-11-27T17:41:47.265261",
+    "metadata": {}
+  },
+  {
+    "id": "8de7783d-f1c0-4d05-9d00-b5a00b0af679",
+    "content": "User's name is Ahmed Hasan",
+    "type": "fact",
+    "importance": 5,
+    "tags": [
+      "name",
+      "user information"
+    ],
+    "created_at": "2025-11-27T17:41:57.512943",
+    "metadata": {}
+  },
+  {
+    "id": "396c2fd1-2c15-4f66-92fe-f9285a80b3e8",
+    "content": "User's name is Ahmad Hassan, spelled with an A and one S.",
+    "type": "fact",
+    "importance": 8,
+    "tags": [
+      "name",
+      "user preference"
+    ],
+    "created_at": "2025-11-27T17:42:12.231689",
+    "metadata": {}
+  },
+  {
+    "id": "17c24736-0e1b-4c79-ae9a-630f16c28358",
+    "content": "Ahmad Hasan, spelled A-H-M-A-D H-A-S-A-N",
+    "type": "fact",
+    "importance": 8,
+    "tags": [
+      "name",
+      "user information"
+    ],
+    "created_at": "2025-11-27T17:42:32.718914",
+    "metadata": {}
+  },
+  {
+    "id": "e5e60ee0-8cc6-4d81-aea0-17457880327a",
+    "content": "User's name is Ahmad Hassan, spelled with an 'A' and one 'S'. User is associated with Constant Labs and is the founder. The website for Constant Labs is constantlabs.ai.",
+    "type": "fact",
+    "importance": 8,
+    "tags": [
+      "name",
+      "professional",
+      "Constant Labs"
+    ],
+    "created_at": "2025-11-27T17:51:48.175194",
+    "metadata": {}
+  }
+]

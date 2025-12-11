@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+token.json
+credentials.json
+calendar_token.json
+task_render.png
+temp_render.png
+test_height.png
+printer_control/energy_graph.png
+backups/
+storage/usage_costs.json

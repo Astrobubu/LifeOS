@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LifeOS Task Designs - Batch 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700;900&family=Courier+Prime:wght@700&family=Permanent+Marker&family=Special+Elite&family=Bebas+Neue&family=Abril+Fatface&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .card-wrapper {
+            text-align: center;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        /* Base Card Dimension - MATCHING PRODUCTION (440x390) */
+        .card {
+            width: 440px;
+            height: 390px;
+            background-color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            /* Internal Centering Defaults */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* --- 1. WARNING ZONE (PRESERVED) --- */
+        .style-warning {
+            background: repeating-linear-gradient(45deg, #fff, #fff 15px, #000 15px, #000 30px);
+        }
+        .style-warning .inner {
+            background: white; width: 90%; height: 80%; border: 4px solid black; box-shadow: 8px 8px 0 black;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .style-warning .head { font-family: 'Oswald'; font-size: 28px; letter-spacing: 2px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;}
+        .style-warning .emoji { font-size: 50px; line-height: 1; margin-bottom: 10px; }
+        .style-warning .text { font-family: 'Oswald'; font-size: 28px; line-height: 1.1; font-weight: 700; text-transform: uppercase; }
+
+        /* --- 2. MINIMALIST --- */
+        .style-minimal .head { font-family: 'Roboto'; font-weight: 300; letter-spacing: 4px; font-size: 16px; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 5px;}
+        .style-minimal .emoji { font-size: 40px; margin-bottom: 20px; opacity: 0.8; }
+        .style-minimal .text { font-family: 'Roboto'; font-weight: 400; font-size: 32px; color: #222; }
+
+        /* --- 3. RETRO TERMINAL --- */
+        .style-terminal { font-family: 'Courier Prime', monospace; border: 4px solid black; align-items: flex-start; padding: 30px; text-align: left; }
+        .style-terminal .head { font-size: 16px; margin-bottom: 20px; }
+        .style-terminal .emoji { font-size: 40px; margin-bottom: 20px; }
+        .style-terminal .text { font-size: 28px; font-weight: 700; text-transform: uppercase; line-height: 1.2; }
+        .style-terminal .prompt { color: black; font-weight: bold; margin-right: 10px; }
+
+        /* --- 4. IMPORTANT NOTICE --- */
+        .style-notice { border: 10px solid black; }
+        .style-notice .head-bar { background: black; color: white; width: 100%; padding: 15px 0; font-family: 'Oswald'; font-weight: 700; font-size: 30px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; position: absolute; top: 0; }
+        .style-notice .emoji { font-size: 60px; margin-top: 40px; margin-bottom: 10px; }
+        .style-notice .text { font-family: 'Oswald'; font-size: 36px; font-weight: 700; text-transform: uppercase; padding: 0 20px; }
+
+        /* --- 5. RECEIPT --- */
+        .style-receipt { font-family: 'Courier Prime', monospace; border-top: 2px dashed black; border-bottom: 2px dashed black; width: 90%; }
+        .style-receipt .meta { width: 100%; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .style-receipt .emoji { font-size: 40px; margin-bottom: 15px; }
+        .style-receipt .text { font-size: 30px; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; }
+        .style-receipt .barcode { font-size: 40px; letter-spacing: -3px; opacity: 0.5; transform: scaleY(0.5); }
+
+        /* --- 6. GEOMETRIC --- */
+        .style-geo { border: 2px solid black; }
+        .style-geo .circle { width: 80px; height: 80px; border-radius: 50%; border: 4px solid black; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; }
+        .style-geo .text { font-family: 'Roboto'; font-weight: 900; font-size: 38px; text-transform: uppercase; padding: 0 10px; }
+
+        /* --- 7. HANDWRITTEN --- */
+        .style-hand { font-family: 'Permanent Marker', cursive; transform: rotate(-1deg); }
+        .style-hand .tape { background: rgba(0,0,0,0.1); width: 120px; height: 30px; position: absolute; top: -10px; }
+        .style-hand .emoji { font-size: 60px; margin-bottom: 10px; }
+        .style-hand .text { font-size: 40px; line-height: 1.1; }
+
+        /* --- 8. INDUSTRIAL LABEL --- */
+        .style-industrial { border: 6px solid black; align-items: stretch; padding: 0; }
+        .style-industrial .top-section { border-bottom: 6px solid black; padding: 10px; display: flex; align-items: center; justify-content: center; }
+        .style-industrial .emoji { font-size: 50px; }
+        .style-industrial .main-section { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; background: #eee; }
+        .style-industrial .text { font-family: 'Oswald'; font-size: 38px; font-weight: 700; text-transform: uppercase; }
+
+        /* --- 9. SPEECH BUBBLE --- */
+        .style-speech .bubble { border: 4px solid black; border-radius: 30px; padding: 20px; position: relative; width: 80%; }
+        .style-speech .bubble:after { content: ''; position: absolute; bottom: -20px; left: 50%; border-width: 20px 20px 0; border-style: solid; border-color: black transparent; display: block; width: 0; }
+        .style-speech .emoji { position: absolute; bottom: 20px; right: 20px; font-size: 50px; } /* Emoji outside? No inside bubble maybe */
+        .style-speech .text { font-family: 'Bebas Neue'; font-size: 40px; line-height: 1; }
+        .style-speech .emoji-main { font-size: 50px; margin-bottom: 10px; }
+
+        /* --- 10. CHECKLIST --- */
+        .style-check { flex-direction: row; padding: 20px; justify-content: flex-start; }
+        .style-check .box { width: 60px; height: 60px; border: 5px solid black; margin-right: 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; } /* Empty box */
+        .style-check .content { text-align: left; }
+        .style-check .text { font-family: 'Roboto'; font-weight: 500; font-size: 34px; line-height: 1.1; }
+        .style-check .emoji { font-size: 30px; margin-top: 10px; }
+
+        /* --- 11. TYPOGRAPHY HEAVY --- */
+        .style-typo .text { font-family: 'Abril Fatface', cursive; font-size: 55px; line-height: 0.9; margin-bottom: 20px; }
+        .style-typo .emoji { font-size: 30px; letter-spacing: 10px; }
+        .style-typo .line { width: 50px; height: 4px; background: black; margin: 20px 0; }
+
+        /* --- 12. FRAMED ART --- */
+        .style-frame { padding: 15px; }
+        .style-frame .outer { border: 2px solid black; width: 100%; height: 100%; padding: 5px; display: flex; align-items: center; justify-content: center; }
+        .style-frame .inner { border: 1px solid black; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .style-frame .emoji { font-size: 50px; margin-bottom: 10px; }
+        .style-frame .text { font-family: 'Special Elite', cursive; font-size: 30px; width: 80%; }
+
+        /* --- 13. CODE SNIPPET --- */
+        .style-code { font-family: 'Courier Prime', monospace; background: #f0f0f0; align-items: flex-start; padding: 30px; border-left: 10px solid #ccc; text-align: left; }
+        .style-code .line { color: #888; margin-right: 15px; }
+        .style-code .text { font-size: 26px; font-weight: bold; }
+        .style-code .emoji { font-size: 30px; margin-top: 10px; }
+
+        /* --- 14. SEAL --- */
+        .style-seal .circle-seal { border: 4px double black; border-radius: 50%; width: 300px; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .style-seal .emoji { font-size: 50px; margin-bottom: 5px; }
+        .style-seal .text { font-family: 'Oswald'; font-size: 28px; width: 80%; line-height: 1.1; font-weight: 700; text-transform: uppercase; }
+        
+        /* --- 15. HIGH CONTRAST --- */
+        .style-contrast { background: black; color: white; }
+        .style-contrast .emoji { font-size: 70px; margin-bottom: 10px; filter: invert(1); }
+        .style-contrast .text { font-family: 'Impact', sans-serif; font-size: 45px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- 16. SKETCHY --- */
+        .style-sketch { border: 3px solid black; border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; padding: 30px; } /* CSS sketch border hack */
+        .style-sketch .emoji { font-size: 60px; margin-bottom: 15px; }
+        .style-sketch .text { font-family: 'Permanent Marker', cursive; font-size: 36px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="card-wrapper">
+        <div class="label">1. Warning Zone (Super Urgent)</div>
+        <div class="card style-warning">
+            <div class="inner">
+                <div class="head">/// URGENT ///</div>
+                <div class="emoji">⚡⚡⚡</div>
+                <div class="text">Server Down</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">2. Minimalist</div>
+        <div class="card style-minimal">
+            <div class="head">Task Item</div>
+            <div class="emoji">⚡</div>
+            <div class="text">Review Contract</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">3. Retro Terminal</div>
+        <div class="card style-terminal">
+            <div class="head">C:\Users\LifeOS> run_task.exe</div>
+            <div class="emoji">⚡⚡</div>
+            <div><span class="prompt">></span><span class="text">Update System</span></div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">4. Important Notice</div>
+        <div class="card style-notice">
+            <div class="head-bar">Notice</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="text">Office Meeting</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">5. Receipt</div>
+        <div class="card style-receipt">
+            <div class="meta"><span>DATE: 2025-12-08</span><span>ID: #4021</span></div>
+            <div class="emoji">⚡</div>
+            <div class="text">Buy Groceries</div>
+            <div class="barcode">||| || ||| ||</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">6. Geometric</div>
+        <div class="card style-geo">
+            <div class="circle">⚡</div>
+            <div class="text">Design Logo</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">7. Handwritten</div>
+        <div class="card style-hand">
+            <!-- <div class="tape"></div> -->
+            <div class="emoji">⚡⚡</div>
+            <div class="text">Call Mom for birthday</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">8. Industrial Label</div>
+        <div class="card style-industrial">
+            <div class="top-section">
+                <div class="emoji">⚡⚡⚡</div>
+            </div>
+            <div class="main-section">
+                <div class="text">SHIPMENT 402</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">9. Speech Bubble</div>
+        <div class="card style-speech">
+            <div class="bubble">
+                <div class="emoji-main">⚡</div>
+                <div class="text">Email Client</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">10. Checklist</div>
+        <div class="card style-check">
+            <div class="box"></div>
+            <div class="content">
+                <div class="text">Finish Report</div>
+                <div class="emoji">⚡⚡</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">11. Typography Heavy</div>
+        <div class="card style-typo">
+            <div class="text">Create Backup</div>
+            <div class="line"></div>
+            <div class="emoji">⚡⚡⚡</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">12. Framed Art</div>
+        <div class="card style-frame">
+            <div class="outer">
+                <div class="inner">
+                    <div class="emoji">⚡</div>
+                    <div class="text">Water Plants</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">13. Code Snippet</div>
+        <div class="card style-code">
+            <div><span class="line">1</span><span class="text">def do_task():</span></div>
+            <div><span class="line">2</span><span class="text">  target = "Fix Bug"</span></div>
+            <div><span class="line">3</span><span class="emoji">  priority = ⚡⚡⚡</span></div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">14. Seal / Badge</div>
+        <div class="card style-seal">
+            <div class="circle-seal">
+                <div class="emoji">⚡⚡</div>
+                <div class="text">Approved for Release</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">15. High Contrast</div>
+        <div class="card style-contrast">
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="text">DANGER ZONE</div>
+        </div>
+    </div>
+
+    <div class="card-wrapper">
+        <div class="label">16. Sketchy</div>
+        <div class="card style-sketch">
+            <div class="emoji">⚡</div>
+            <div class="text">Brainstorm Ideas</div>
+        </div>
+    </div>
+
+</body>
+</html>

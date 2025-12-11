@@ -1,0 +1,111 @@
+[
+  {
+    "id": "6538a330",
+    "person": "Mom",
+    "amount": 30,
+    "direction": "i_owe",
+    "note": "Borrowed 10 dirhams from Mom.",
+    "status": "active",
+    "created_at": "2025-11-29T16:32:34.719235"
+  },
+  {
+    "id": "0e0b9283",
+    "person": "Khadija",
+    "amount": 20,
+    "direction": "i_owe",
+    "note": "Borrowed 20 AED from Khadija",
+    "status": "active",
+    "created_at": "2025-11-29T17:22:56.117094"
+  },
+  {
+    "id": "f5754d32",
+    "person": "Ameena",
+    "amount": 10,
+    "direction": "i_owe",
+    "note": "Borrowed 10 AED from Ameena",
+    "status": "active",
+    "created_at": "2025-11-29T17:22:58.924485"
+  },
+  {
+    "id": "586e238f",
+    "person": "Mom",
+    "amount": 10,
+    "direction": "i_owe",
+    "note": "Borrowed 10 AED from mom",
+    "status": "settled",
+    "created_at": "2025-11-29T17:31:58.608719",
+    "settled_at": "2025-11-29T20:57:22.657986"
+  },
+  {
+    "id": "9fceb77a",
+    "person": "Ali",
+    "amount": 130,
+    "direction": "i_owe",
+    "note": "Around 130 AED (merged 30 + ~100). Recorded per user instruction.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.780262"
+  },
+  {
+    "id": "df8d326d",
+    "person": "Mahmood",
+    "amount": 76,
+    "direction": "i_owe",
+    "note": "One of Mahmood's loans.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.797830"
+  },
+  {
+    "id": "c3adf772",
+    "person": "Mahmood",
+    "amount": 40,
+    "direction": "i_owe",
+    "note": "One of Mahmood's loans.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.811846"
+  },
+  {
+    "id": "fb88e569",
+    "person": "Tamer",
+    "amount": 55,
+    "direction": "i_owe",
+    "note": "Tamer loan 1 of 3.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.811846"
+  },
+  {
+    "id": "855e09a3",
+    "person": "Tamer",
+    "amount": 33,
+    "direction": "i_owe",
+    "note": "Tamer loan 2 of 3.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.827512"
+  },
+  {
+    "id": "1082ee2f",
+    "person": "Tamer",
+    "amount": 57,
+    "direction": "i_owe",
+    "note": "Tamer loan 3 of 3.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.827512"
+  },
+  {
+    "id": "7866a41d",
+    "person": "Dad",
+    "amount": 400,
+    "direction": "i_owe",
+    "note": "Dad loan.",
+    "status": "active",
+    "created_at": "2025-11-29T20:56:31.848169"
+  },
+  {
+    "id": "433a50ad",
+    "person": "Mahmood",
+    "amount": 76,
+    "direction": "i_owe",
+    "note": "Merged Mahmood's separate loans (36 + 40 or 76 + 40) into single entry.",
+    "status": "active",
+    "created_at": "2025-11-29T21:00:29.597118"
+  }
+]

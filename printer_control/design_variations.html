@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LifeOS Task Design Variations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&family=Playfair+Display:wght@700&family=Courier+Prime:wght@700&family=Bebas+Neue&family=Abril+Fatface&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        /* BASE CARD STYLE (Matches Printer Size) */
+        .card {
+            width: 440px;
+            height: 400px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            /* Flex defaults for centering */
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border: 1px solid #ddd; /* Just for display on screen */
+        }
+
+        /* --- STYLE 1: Minimalist Centered (Refined) --- */
+        .style-1 {
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .style-1 .header { font-family: 'Oswald'; font-size: 24px; font-weight: 700; position: absolute; top: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .style-1 .emoji { font-size: 70px; line-height: 1; margin-bottom: 10px; }
+        .style-1 .task { font-family: 'Oswald'; font-size: 45px; line-height: 1.1; text-transform: uppercase; }
+
+        /* --- STYLE 2: Inverted Header --- */
+        .style-2 {
+            align-items: center;
+        }
+        .style-2 .header-bar { width: 100%; background: black; color: white; padding: 10px 0; font-family: 'Oswald'; font-size: 28px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; }
+        .style-2 .content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .style-2 .emoji { font-size: 70px; margin-bottom: 10px; }
+        .style-2 .task { font-family: 'Oswald'; font-size: 40px; text-transform: uppercase; padding: 0 20px; }
+
+        /* --- STYLE 3: The Ticket (Dashed) --- */
+        .style-3 {
+            align-items: center;
+            border: 4px dashed black;
+            margin: 10px;
+            width: 420px; /* Adjust for margin */
+            height: 380px;
+            justify-content: center;
+            position: relative;
+        }
+        .style-3 .header { position: absolute; top: 10px; left: 10px; font-family: 'Courier Prime'; font-weight: 700; font-size: 20px; text-decoration: underline; }
+        .style-3 .emoji { font-size: 60px; margin: 20px 0; }
+        .style-3 .task { font-family: 'Courier Prime'; font-weight: 700; font-size: 36px; text-transform: uppercase; }
+        .style-3 .date { position: absolute; bottom: 10px; right: 10px; font-family: 'Courier Prime'; font-size: 14px; }
+
+        /* --- STYLE 4: Brutalist Box --- */
+        .style-4 {
+            padding: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .style-4 .header { font-family: 'Archivo Black', 'Roboto'; font-weight: 900; font-size: 60px; line-height: 0.8; margin-bottom: 20px; border-bottom: 5px solid black; width: 100%; }
+        .style-4 .task { font-family: 'Roboto'; font-weight: 900; font-size: 42px; text-transform: uppercase; line-height: 1; }
+        .style-4 .emoji { align-self: flex-end; font-size: 60px; }
+
+        /* --- STYLE 5: Elegant Serif --- */
+        .style-5 {
+            align-items: center;
+            justify-content: center;
+            border: 2px solid black;
+            margin: 15px;
+            width: 410px;
+            height: 370px;
+            border-radius: 10px;
+        }
+        .style-5 .header { font-family: 'Playfair Display'; font-style: italic; font-size: 24px; position: absolute; top: 40px; border-bottom: 1px solid black; padding-bottom: 5px; }
+        .style-5 .emoji { font-size: 60px; margin-top: 20px; margin-bottom: 10px; }
+        .style-5 .task { font-family: 'Playfair Display'; font-weight: 700; font-size: 42px; line-height: 1.1; }
+
+        /* --- STYLE 6: Focus Card (Inverted Center) --- */
+        .style-6 {
+            align-items: center;
+            justify-content: center;
+            background-color: black; /* Inverted background */
+            color: white;
+        }
+        .style-6 .header { position: absolute; top: 20px; font-family: 'Oswald'; color: white; border: 1px solid white; padding: 5px 15px; border-radius: 20px; }
+        .style-6 .emoji { font-size: 80px; margin-bottom: 20px; filter: invert(1); /* Invert emoji to look right on black? Or Keep native */ }
+        .style-6 .task { font-family: 'Oswald'; font-size: 48px; font-weight: 500; text-transform: uppercase; }
+
+        /* --- STYLE 7: Side Stripe --- */
+        .style-7 {
+            flex-direction: row;
+            align-items: stretch;
+        }
+        .style-7 .stripe { width: 60px; background: black; display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; color: white; font-family: 'Oswald'; font-size: 30px; letter-spacing: 5px; font-weight: bold; }
+        .style-7 .content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .style-7 .emoji { font-size: 70px; margin-bottom: 15px; }
+        .style-7 .task { font-family: 'Bebas Neue', sans-serif; font-size: 55px; line-height: 0.9; }
+
+        /* --- STYLE 8: Warning Zone --- */
+        .style-8 {
+            align-items: center;
+            justify-content: center;
+            background: repeating-linear-gradient(
+                45deg,
+                #fff,
+                #fff 20px,
+                #000 20px,
+                #000 40px
+            );
+            padding: 20px;
+        }
+        .style-8 .inner-box {
+            background: white;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid black;
+            box-shadow: 10px 10px 0 black;
+        }
+        .style-8 .header { font-family: 'Impact', sans-serif; font-size: 30px; letter-spacing: 2px; margin-bottom: 10px; }
+        .style-8 .task { font-family: 'Oswald'; font-size: 40px; font-weight: 700; text-transform: uppercase; }
+        .style-8 .emoji { font-size: 60px; margin-bottom: 10px; }
+
+        /* --- STYLE 9: Big Number / Priority --- */
+        .style-9 {
+            align-items: flex-start;
+            padding: 30px;
+            justify-content: center;
+        }
+        .style-9 .priority-wrapper { display: flex; align-items: center; border-bottom: 4px solid black; width: 100%; padding-bottom: 10px; margin-bottom: 20px; }
+        .style-9 .big-num { font-family: 'Abril Fatface', cursive; font-size: 100px; line-height: 0.8; margin-right: 20px; }
+        .style-9 .label { font-family: 'Oswald'; font-size: 24px; text-transform: uppercase; color: black; }
+        .style-9 .task { font-family: 'Roboto'; font-weight: 900; font-size: 40px; text-transform: uppercase; text-align: left; }
+
+        /* --- STYLE 10: The Stamp --- */
+        .style-10 {
+            align-items: center;
+            justify-content: center;
+            border: 8px double black;
+            margin: 10px;
+            width: 420px;
+            height: 380px;
+            border-radius: 20px;
+        }
+        .style-10 .header { font-family: 'Courier Prime'; font-weight: 700; font-size: 18px; text-transform: uppercase; border-bottom: 2px solid black; margin-bottom: 20px; padding: 0 20px; }
+        .style-10 .emoji { font-size: 80px; margin-bottom: 10px; }
+        .style-10 .task { font-family: 'Courier Prime'; font-weight: 700; font-size: 34px; text-transform: uppercase; }
+
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div class="label">Style 1: Minimalist Bold (Refined)</div>
+        <div class="card style-1">
+            <div class="header">Task</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="task">Buy Milk</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 2: Inverted Header</div>
+        <div class="card style-2">
+            <div class="header-bar">Task</div>
+            <div class="content">
+                <div class="emoji">⚡⚡⚡</div>
+                <div class="task">Buy Milk</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 3: The Ticket</div>
+        <div class="card style-3">
+            <div class="header">PRIORITY TICKET</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="task">BUY MILK</div>
+            <div class="date">REF: 001</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 4: Brutalist</div>
+        <div class="card style-4">
+            <div class="header">DO THIS.</div>
+            <div class="task">BUY MILK IMMEDIATELY</div>
+            <div class="emoji">⚡⚡⚡</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 5: Elegant Serif</div>
+        <div class="card style-5">
+            <div class="header">Agenda Item</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="task">Buy Milk</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 6: Dark Mode (Inverted)</div>
+        <div class="card style-6">
+            <div class="header">CRITICAL</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="task">Buy Milk</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 7: Side Stripe</div>
+        <div class="card style-7">
+            <div class="stripe">PRIORITY</div>
+            <div class="content">
+                <div class="emoji">⚡⚡⚡</div>
+                <div class="task">Buy Milk</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 8: Warning Zone</div>
+        <div class="card style-8">
+            <div class="inner-box">
+                <div class="header">/// URGENT ///</div>
+                <div class="emoji">⚡⚡⚡</div>
+                <div class="task">Buy Milk</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 9: Big Number</div>
+        <div class="card style-9">
+            <div class="priority-wrapper">
+                <div class="big-num">01</div>
+                <div class="label">High<br>Priority</div>
+            </div>
+            <div class="task">Buy Milk</div>
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="label">Style 10: The Stamp</div>
+        <div class="card style-10">
+            <div class="header">Official Task</div>
+            <div class="emoji">⚡⚡⚡</div>
+            <div class="task">Buy Milk</div>
+        </div>
+    </div>
+
+</body>
+</html>

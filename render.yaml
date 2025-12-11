@@ -1,0 +1,22 @@
+# Render.com deployment configuration
+services:
+  - type: worker
+    name: lifeos-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ALLOWED_USER_IDS
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+    disk:
+      name: lifeos-storage
+      mountPath: /app/storage
+      sizeGB: 1

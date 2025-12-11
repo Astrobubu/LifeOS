@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LifeOS Task Card - Warning Zone (Urgent)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {{
+            width: 440px;
+            height: 390px; /* Fixed height */
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            text-align: center;
+            
+            /* Style 8 Background Effect */
+            background: repeating-linear-gradient(
+                45deg,
+                #fff,
+                #fff 15px,
+                #000 15px,
+                #000 30px
+            );
+        }}
+
+        .inner-box {{
+            background: white;
+            width: 90%;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid black;
+            box-shadow: 8px 8px 0 black;
+            box-sizing: border-box;
+            padding: 10px;
+        }}
+
+        .header-label {{
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: black;
+            text-transform: uppercase;
+            font-weight: 700;
+        }}
+
+        .importance {{
+            font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+            font-size: 50px;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: black;
+        }}
+
+        .task-text {{
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            line-height: 1.1;
+            font-weight: 700;
+            color: black;
+            text-transform: uppercase;
+            padding: 5px;
+            width: 90%;
+            word-wrap: break-word;
+        }}
+    </style>
+</head>
+<body>
+    <div class="inner-box">
+        <div class="header-label">URGENT</div>
+        <div class="importance">{emoji_str}</div>
+        <div class="task-text">{task_text}</div>
+    </div>
+</body>
+</html>
