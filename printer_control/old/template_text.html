@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LifeOS Text Print</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {{
+            box-sizing: border-box;
+        }}
+        body {{
+            width: 456px;
+            height: {height}px;
+            background-color: white;
+            margin: 0;
+            padding: 30px 20px 50px 20px;
+            font-family: 'JetBrains Mono', monospace;
+        }}
+        .container {{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 5px solid black;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+        }}
+        .title {{
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid black;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }}
+        .content {{
+            font-size: 26px;
+            line-height: 1.4;
+            font-weight: bold;
+        }}
+        .line {{
+            margin: 6px 0;
+            padding: 4px 0;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        {title_html}
+        <div class="content">
+{lines_html}
+        </div>
+    </div>
+</body>
+</html>

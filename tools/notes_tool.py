@@ -59,16 +59,14 @@ class NotesTool(BaseTool):
             self._save_index({})
     
     def _load_index(self) -> dict:
-        """Load notes index"""
-        if self.index_file.exists():
-            with open(self.index_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return {}
+        """Load notes index with data integrity check"""
+        from .base_tool import safe_load_json
+        return safe_load_json(self.index_file, default={}, expected_type=dict)
     
     def _save_index(self, index: dict):
-        """Save notes index"""
-        with open(self.index_file, "w", encoding="utf-8") as f:
-            json.dump(index, f, indent=2, ensure_ascii=False)
+        """Save notes index with backup"""
+        from .base_tool import safe_save_json
+        safe_save_json(self.index_file, index, backup=True)
     
     def get_function_schemas(self) -> list[dict]:
         return [
@@ -175,7 +173,7 @@ class NotesTool(BaseTool):
         }
         self._save_index(index)
         
-        return ToolResult(success=True, data=f"Note '{title}' created successfully")
+        return ToolResult(success=True, data=f"✓ Note saved: {title}")
     
     def _find_note(self, title: str, index: dict) -> str | None:
         """Find a note by title using fuzzy matching"""
@@ -234,7 +232,7 @@ class NotesTool(BaseTool):
         index[actual_title]["updated_at"] = datetime.now().isoformat()
         self._save_index(index)
         
-        return ToolResult(success=True, data=f"Note '{actual_title}' updated successfully")
+        return ToolResult(success=True, data=f"✓ Note updated: {actual_title}")
     
     async def _delete_note(self, title: str) -> ToolResult:
         index = self._load_index()
@@ -253,7 +251,7 @@ class NotesTool(BaseTool):
         del index[actual_title]
         self._save_index(index)
         
-        return ToolResult(success=True, data=f"Note '{actual_title}' deleted successfully")
+        return ToolResult(success=True, data=f"✓ Note deleted: {actual_title}")
     
     async def _list_notes(self, tags: list = None) -> ToolResult:
         index = self._load_index()

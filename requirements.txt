@@ -28,3 +28,6 @@ python-dateutil==2.9.0
 
 # For Render deployment
 gunicorn==23.0.0
+
+# Terminal UI
+textual

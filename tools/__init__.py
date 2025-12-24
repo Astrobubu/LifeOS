@@ -7,6 +7,7 @@ from .finance_tool import FinanceTool
 from .browser_tool import BrowserTool
 from .web_search_tool import WebSearchTool
 from .printer_tool import PrinterTool
+from .automations_tool import AutomationsTool
 
 AVAILABLE_TOOLS = {
     'tasks': TasksTool,
@@ -16,7 +17,8 @@ AVAILABLE_TOOLS = {
     'finance': FinanceTool,
     'browser': BrowserTool,
     'web_search': WebSearchTool,
-    'printer': PrinterTool
+    'printer': PrinterTool,
+    'automations': AutomationsTool
 }
 
 def get_tool(tool_name: str) -> BaseTool:

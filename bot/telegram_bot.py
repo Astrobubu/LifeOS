@@ -15,9 +15,14 @@ from agent.smart_agent import SmartAgent, AgentResponse
 from utils.cost_tracker import cost_tracker
 from utils.backup import get_backup_stats
 
+# Setup comprehensive logging to file AND console
 logging.basicConfig(
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    handlers=[
+        logging.FileHandler('d:\\Apps\\LifeOS\\bot.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -542,13 +547,17 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     typing_task = asyncio.create_task(keep_typing(update.effective_chat.id, context.bot, stop_typing))
     
     try:
+        logger.info(f"[IMAGE] Processing image from user {user_id}")
         photo = update.message.photo[-1]
         photo_file = await context.bot.get_file(photo.file_id)
         photo_bytes = await photo_file.download_as_bytearray()
         caption = update.message.caption or ""
+        logger.info(f"[IMAGE] Downloaded {len(photo_bytes)} bytes, caption: '{caption}'")
         
         # Process image with user context for smart actions
+        logger.info(f"[IMAGE] Calling agent.process_image...")
         response = await agent.process_image(bytes(photo_bytes), caption, user_id)
+        logger.info(f"[IMAGE] Got response: needs_confirmation={response.needs_confirmation}, text_len={len(response.text) if response.text else 0}")
         
         # Handle confirmation if needed
         if response.needs_confirmation:
@@ -558,17 +567,23 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         else:
+            logger.info(f"[IMAGE] Sending response to user: '{response.text[:100]}...'")
             msg = await update.message.reply_text(response.text)
         track_message(user_id, msg.message_id)
+        logger.info(f"[IMAGE] Image processing completed successfully")
         
     except Exception as e:
-        logger.error(f"Photo error: {e}", exc_info=True)
+        logger.error(f"[IMAGE] Photo error: {e}", exc_info=True)
+        logger.error(f"[IMAGE] Full traceback:", exc_info=True)
         try:
             from utils.terminal_ui import terminal_ui
             terminal_ui.log_error(str(e), "Photo")
         except:
             pass
-        msg = await update.message.reply_text(f"Couldn't process image. Try a clearer photo or describe what you need.")
+        # Show actual error to help debug
+        error_msg = str(e)[:500] if str(e) else "Unknown error"
+        logger.error(f"[IMAGE] Sending error to user: {error_msg}")
+        msg = await update.message.reply_text(f"❌ Image processing error:\n\n{error_msg}")
         track_message(user_id, msg.message_id)
     finally:
         stop_typing.set()
@@ -618,6 +633,61 @@ def run_bot():
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
+async def automation_scheduler():
+    """Background task to check and run due automations every minute.
+    
+    This enables catch-up for missed scheduled tasks (e.g., if PC was off).
+    """
+    from tools import get_tool
+    automations_tool = get_tool("automations")
+    
+    # Wait a bit on startup to let everything initialize
+    await asyncio.sleep(5)
+    
+    while True:
+        try:
+            results = await automations_tool.check_and_run_due()
+            if results:
+                for result in results:
+                    if result.success:
+                        data = result.data
+                        try:
+                            from utils.terminal_ui import terminal_ui
+                            if isinstance(data, dict) and data.get("type") == "prompt":
+                                # Handle prompt-type automation - process through agent
+                                auto_name = data.get('automation_name', 'prompt')
+                                terminal_ui.log_activity(f"Auto: {auto_name}")
+                                
+                                if settings.ALLOWED_USER_IDS:
+                                    try:
+                                        response = await agent.process(data["prompt"], settings.ALLOWED_USER_IDS[0])
+                                        terminal_ui.log_activity(f"Auto done: {auto_name}")
+                                    except Exception as agent_err:
+                                        terminal_ui.log_error(f"Auto failed: {str(agent_err)[:80]}", "Agent")
+                                        logger.error(f"Automation agent error for {auto_name}: {agent_err}", exc_info=True)
+                            else:
+                                terminal_ui.log_activity(f"Auto: {str(data)[:30]}")
+                        except Exception as e:
+                            logger.error(f"Automation log error: {e}", exc_info=True)
+                    else:
+                        # Log failed automation
+                        logger.error(f"Automation failed: {result.error}")
+                        try:
+                            from utils.terminal_ui import terminal_ui
+                            terminal_ui.log_error(f"Auto: {str(result.error)[:50]}", "Auto")
+                        except:
+                            pass
+        except Exception as e:
+            logger.error(f"Automation scheduler error: {e}", exc_info=True)
+            try:
+                from utils.terminal_ui import terminal_ui
+                terminal_ui.log_error(f"Scheduler: {str(e)[:50]}", "Auto")
+            except:
+                pass
+        
+        await asyncio.sleep(60)  # Check every minute
+
+
 async def run_bot_async():
     """Start the Telegram bot (async version for terminal UI)"""
     # Validate settings
@@ -645,6 +715,10 @@ async def run_bot_async():
     await app.initialize()
     await app.start()
     await app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+    
+    # Start automation scheduler in background
+    asyncio.create_task(automation_scheduler())
+    logger.info("Automation scheduler started")
     
     # Keep running
     while True:

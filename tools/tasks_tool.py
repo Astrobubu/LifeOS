@@ -1,10 +1,10 @@
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from difflib import SequenceMatcher
 from config.settings import settings
-from .base_tool import BaseTool, ToolResult
+from .base_tool import BaseTool, ToolResult, safe_load_json, safe_save_json
 
 
 def fuzzy_find_task(query: str, tasks: list[dict]) -> dict | None:
@@ -58,6 +58,8 @@ class TasksTool(BaseTool):
     def __init__(self):
         self.tasks_file = settings.TASKS_DIR / "tasks.json"
         self._ensure_file()
+        # Process recurring tasks on init
+        self._process_recurring_tasks()
     
     def _ensure_file(self):
         """Ensure tasks file exists"""
@@ -65,28 +67,66 @@ class TasksTool(BaseTool):
             self._save_tasks([])
     
     def _load_tasks(self) -> list[dict]:
-        """Load tasks from file"""
-        if self.tasks_file.exists():
-            with open(self.tasks_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return []
+        """Load tasks with data integrity check"""
+        return safe_load_json(self.tasks_file, default=[], expected_type=list)
     
     def _save_tasks(self, tasks: list[dict]):
-        """Save tasks to file"""
-        with open(self.tasks_file, "w", encoding="utf-8") as f:
-            json.dump(tasks, f, indent=2, ensure_ascii=False)
+        """Save tasks with backup"""
+        safe_save_json(self.tasks_file, tasks, backup=True)
+    
+    def _process_recurring_tasks(self):
+        """Check and create instances of recurring tasks"""
+        tasks = self._load_tasks()
+        today = datetime.now().date()
+        new_tasks = []
+        
+        for task in tasks:
+            if task.get("recurrence") and task["status"] == "completed":
+                # Check if we need to create a new instance
+                last_completed = task.get("completed_at")
+                if last_completed:
+                    last_date = datetime.fromisoformat(last_completed).date()
+                    recurrence = task["recurrence"]
+                    
+                    should_create = False
+                    if recurrence == "daily" and (today - last_date).days >= 1:
+                        should_create = True
+                    elif recurrence == "weekly" and (today - last_date).days >= 7:
+                        should_create = True
+                    elif recurrence == "monthly" and (today - last_date).days >= 30:
+                        should_create = True
+                    
+                    if should_create:
+                        new_task = {
+                            "id": str(uuid.uuid4())[:8],
+                            "title": task["title"],
+                            "status": "pending",
+                            "priority": task.get("priority", "medium"),
+                            "due_date": today.isoformat(),
+                            "tags": task.get("tags", []),
+                            "project": task.get("project"),
+                            "recurrence": recurrence,
+                            "created_at": datetime.now().isoformat(),
+                            "completed_at": None
+                        }
+                        new_tasks.append(new_task)
+        
+        if new_tasks:
+            tasks.extend(new_tasks)
+            self._save_tasks(tasks)
     
     def get_function_schemas(self) -> list[dict]:
         return [
             self._make_schema(
                 name="add_task",
-                description="Add a new task",
+                description="Add a new task. Use recurrence for daily/weekly/monthly repeating tasks.",
                 parameters={
                     "title": {"type": "string", "description": "Task title/description"},
                     "priority": {"type": "string", "enum": ["low", "medium", "high"], "description": "Task priority"},
                     "due_date": {"type": "string", "description": "Due date in YYYY-MM-DD format"},
                     "tags": {"type": "array", "items": {"type": "string"}, "description": "Tags for the task"},
-                    "project": {"type": "string", "description": "Project this task belongs to"}
+                    "project": {"type": "string", "description": "Project this task belongs to"},
+                    "recurrence": {"type": "string", "enum": ["daily", "weekly", "monthly"], "description": "How often task repeats"}
                 },
                 required=["title"]
             ),
@@ -137,6 +177,39 @@ class TasksTool(BaseTool):
                     "task_id": {"type": "string", "description": "ID of the task"}
                 },
                 required=["task_id"]
+            ),
+            self._make_schema(
+                name="add_tasks",
+                description="Add multiple tasks at once (batch operation)",
+                parameters={
+                    "tasks": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "title": {"type": "string"},
+                                "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+                                "due_date": {"type": "string"},
+                                "project": {"type": "string"}
+                            },
+                            "required": ["title"]
+                        },
+                        "description": "Array of task objects to add"
+                    }
+                },
+                required=["tasks"]
+            ),
+            self._make_schema(
+                name="complete_tasks",
+                description="Complete multiple tasks at once (batch operation)",
+                parameters={
+                    "task_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Array of task IDs to complete"
+                    }
+                },
+                required=["task_ids"]
             )
         ]
     
@@ -144,8 +217,12 @@ class TasksTool(BaseTool):
         try:
             if function_name == "add_task":
                 return await self._add_task(**arguments)
+            elif function_name == "add_tasks":
+                return await self._add_tasks(**arguments)
             elif function_name == "complete_task":
                 return await self._complete_task(**arguments)
+            elif function_name == "complete_tasks":
+                return await self._complete_tasks(**arguments)
             elif function_name == "delete_task":
                 return await self._delete_task(**arguments)
             elif function_name == "list_tasks":
@@ -165,7 +242,8 @@ class TasksTool(BaseTool):
         priority: str = "medium",
         due_date: str = None,
         tags: list = None,
-        project: str = None
+        project: str = None,
+        recurrence: str = None
     ) -> ToolResult:
         tasks = self._load_tasks()
         
@@ -177,6 +255,7 @@ class TasksTool(BaseTool):
             "due_date": due_date,
             "tags": tags or [],
             "project": project,
+            "recurrence": recurrence,
             "created_at": datetime.now().isoformat(),
             "completed_at": None
         }
@@ -184,10 +263,8 @@ class TasksTool(BaseTool):
         tasks.append(task)
         self._save_tasks(tasks)
         
-        return ToolResult(success=True, data={
-            "message": f"Task added: {title}",
-            "task_id": task["id"]
-        })
+        recurrence_text = f" (repeats {recurrence})" if recurrence else ""
+        return ToolResult(success=True, data=f"✓ Added: {title}{recurrence_text}")
     
     async def _complete_task(self, task_id: str) -> ToolResult:
         tasks = self._load_tasks()
@@ -197,11 +274,11 @@ class TasksTool(BaseTool):
             task["status"] = "completed"
             task["completed_at"] = datetime.now().isoformat()
             self._save_tasks(tasks)
-            return ToolResult(success=True, data=f"Task '{task['title']}' marked as completed")
+            return ToolResult(success=True, data=f"✓ Done: {task['title']}")
         
         pending = [t for t in tasks if t["status"] == "pending"]
-        hint = f" Pending tasks: {', '.join(t['title'][:30] for t in pending[:3])}" if pending else ""
-        return ToolResult(success=False, error=f"Task '{task_id}' not found.{hint}")
+        hint = f" Pending: {', '.join(t['title'][:20] for t in pending[:3])}" if pending else ""
+        return ToolResult(success=False, error=f"Not found: {task_id}.{hint}")
     
     async def _delete_task(self, task_id: str) -> ToolResult:
         tasks = self._load_tasks()
@@ -264,9 +341,9 @@ class TasksTool(BaseTool):
                 if key != "task_id" and value is not None:
                     task[key] = value
             self._save_tasks(tasks)
-            return ToolResult(success=True, data=f"Task '{task['title']}' updated")
+            return ToolResult(success=True, data=f"✓ Updated: {task['title']}")
         
-        return ToolResult(success=False, error=f"Task '{task_id}' not found")
+        return ToolResult(success=False, error=f"Not found: {task_id}")
     
     async def _get_task(self, task_id: str) -> ToolResult:
         tasks = self._load_tasks()
@@ -275,4 +352,28 @@ class TasksTool(BaseTool):
         if task:
             return ToolResult(success=True, data=task)
         
-        return ToolResult(success=False, error=f"Task '{task_id}' not found")
+        return ToolResult(success=False, error=f"Not found: {task_id}")
+    
+    async def _add_tasks(self, tasks: list[dict]) -> ToolResult:
+        """Add multiple tasks at once (batch)"""
+        added = []
+        for task_data in tasks:
+            result = await self._add_task(
+                title=task_data.get("title", "Untitled"),
+                priority=task_data.get("priority", "medium"),
+                due_date=task_data.get("due_date"),
+                tags=task_data.get("tags"),
+                project=task_data.get("project")
+            )
+            if result.success:
+                added.append(task_data.get("title", "task"))
+        return ToolResult(success=True, data=f"✓ Added {len(added)} tasks")
+    
+    async def _complete_tasks(self, task_ids: list[str]) -> ToolResult:
+        """Complete multiple tasks at once (batch)"""
+        completed = []
+        for tid in task_ids:
+            result = await self._complete_task(tid)
+            if result.success:
+                completed.append(tid)
+        return ToolResult(success=True, data=f"✓ Completed {len(completed)} tasks")

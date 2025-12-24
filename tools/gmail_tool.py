@@ -71,9 +71,13 @@ class GmailTool(BaseTool):
             ),
             self._make_schema(
                 name="send_email",
-                description="Send an email",
+                description="""Send an email. WORKFLOW:
+1. You MUST have a valid recipient email address before calling this
+2. If user says 'email John' but you don't have John's email, use web_search first
+3. Use user's profile/signature when drafting
+4. This requires confirmation before sending""",
                 parameters={
-                    "to": {"type": "string", "description": "Recipient email address"},
+                    "to": {"type": "string", "description": "Recipient email address (REQUIRED - must be valid)"},
                     "subject": {"type": "string", "description": "Email subject"},
                     "body": {"type": "string", "description": "Email body (plain text or HTML)"},
                     "html": {"type": "boolean", "description": "If true, body is HTML"}

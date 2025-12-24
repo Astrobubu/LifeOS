@@ -71,8 +71,23 @@ class VectorMemory:
         source: str = "conversation",
         metadata: dict = None
     ) -> dict:
-        """Add a new memory with embedding"""
+        """Add a new memory with embedding (with deduplication)"""
         embedding = await self._get_embedding(content)
+        
+        # Deduplication: check if very similar memory exists (>0.9 similarity)
+        if len(self.embeddings) > 0:
+            similarities = np.dot(self.embeddings, embedding) / (
+                np.linalg.norm(self.embeddings, axis=1) * np.linalg.norm(embedding)
+            )
+            max_sim_idx = np.argmax(similarities)
+            if similarities[max_sim_idx] > 0.9:
+                # Update importance of existing memory instead of adding duplicate
+                existing = self.memories[max_sim_idx]
+                existing["importance"] = max(existing["importance"], importance)
+                existing["access_count"] += 1
+                existing["last_accessed"] = datetime.now().isoformat()
+                self._save()
+                return existing  # Return existing instead of creating new
         
         memory = {
             "id": len(self.memories),
@@ -109,9 +124,10 @@ class VectorMemory:
         recency_weight: float = 0.1
     ) -> list[dict]:
         """
-        Semantic search with recency and importance weighting
-        
-        Score = similarity * (1 - recency_weight) + recency_score * recency_weight + importance * 0.1
+        Semantic search with SMART importance scoring:
+        - Boost importance when accessed (learn from usage)
+        - Decay importance for never-accessed old memories
+        - Weight by memory type (facts > events > general)
         """
         if not self.memories or len(self.embeddings) == 0:
             return []
@@ -126,6 +142,16 @@ class VectorMemory:
         results = []
         now = datetime.now()
         
+        # Type importance weights (facts are more valuable than general)
+        type_weights = {
+            "fact": 1.2,
+            "preference": 1.15,
+            "insight": 1.1,
+            "task": 1.0,
+            "event": 0.9,
+            "general": 0.8
+        }
+        
         for i, (memory, similarity) in enumerate(zip(self.memories, similarities)):
             if similarity < min_similarity:
                 continue
@@ -138,27 +164,40 @@ class VectorMemory:
             days_old = (now - created).days
             recency_score = np.exp(-days_old / 30)
             
+            # Smart importance adjustment
+            base_importance = memory["importance"]
+            access_boost = min(memory["access_count"] * 0.02, 0.2)  # Max +0.2 from access
+            age_decay = 0 if days_old < 14 else min(days_old * 0.001, 0.1)  # Slow decay after 2 weeks
+            type_weight = type_weights.get(memory["type"], 1.0)
+            
+            smart_importance = (base_importance + access_boost - age_decay) * type_weight
+            smart_importance = max(0.1, min(1.0, smart_importance))  # Clamp to [0.1, 1.0]
+            
             # Combined score
             score = (
                 similarity * (1 - recency_weight) +
                 recency_score * recency_weight +
-                memory["importance"] * 0.1
+                smart_importance * 0.15  # Increased importance weight
             )
             
             results.append({
                 **memory,
                 "similarity": float(similarity),
-                "score": float(score)
+                "score": float(score),
+                "smart_importance": float(smart_importance)
             })
         
         # Sort by score
         results.sort(key=lambda x: x["score"], reverse=True)
         
-        # Update access stats for returned memories
+        # Update access stats and boost importance for accessed memories
         for result in results[:limit]:
             idx = result["id"]
             self.memories[idx]["last_accessed"] = now.isoformat()
             self.memories[idx]["access_count"] += 1
+            # Slight importance boost on access (learn from usage patterns)
+            old_importance = self.memories[idx]["importance"]
+            self.memories[idx]["importance"] = min(1.0, old_importance + 0.01)
         
         self._save()
         return results[:limit]
