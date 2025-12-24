@@ -65,6 +65,12 @@ SYSTEM_PROMPT = """You are LifeOS, an intelligent autonomous AI assistant for {u
 - Don't explain what you're doing unless asked
 - Short responses unless user needs explanation
 
+### 3.5. PRINT = JUST DO IT
+- When user says "print" (print task, print text, print this) → CALL THE PRINTER TOOL IMMEDIATELY
+- NO analyzing, NO questioning, NO explaining what you're about to print
+- Extract the key content and print_task or print_text directly
+- Response after printing: "✓ Printed" - that's it
+
 ### 4. PROACTIVE THINKING
 - Notice patterns in what user asks for
 - Suggest improvements when appropriate
@@ -473,6 +479,7 @@ Caption: "{caption}"
 Image content summary: {extracted_info[:300]}
 
 Possible intents:
+- print: wants to PRINT this (keywords: print, printer, output, physical copy). HIGH PRIORITY - if any print keyword found, choose this.
 - contact: wants to reach out to someone (email, call, add contact)
 - save_note: wants to save this information as a note
 - remember: wants to store specific facts from the image
@@ -481,7 +488,7 @@ Possible intents:
 
 Return JSON with:
 {{
-  "intent": "contact|save_note|remember|analyze|no_action",
+  "intent": "print|contact|save_note|remember|analyze|no_action",
   "confidence": 0.0-1.0,
   "reasoning": "brief explanation of why you chose this intent",
   "suggested_action": "what the user likely wants done"
@@ -604,6 +611,24 @@ Return a simple comma-separated list of key entities (max 10)."""
             pass  # Memory storage is non-critical
         
         # Step 4: Execute action based on intent and confidence
+        
+        # PRINT INTENT - fast path, no overthinking
+        if intent == "print" and confidence >= 0.5:
+            # Extract just the essential text/task from image_info for printing
+            print_text = image_info.strip()
+            # Keep it short - just the key text, no descriptions
+            if len(print_text) > 300:
+                # Let agent decide what to print but with clear instruction
+                return await self.process(
+                    f"Print this exactly, no questions: {print_text[:500]}",
+                    user_id
+                )
+            else:
+                return await self.process(
+                    f"Print this task: {print_text}",
+                    user_id
+                )
+        
         if confidence >= 0.6 and intent in ["contact", "save_note", "remember"] and user_id:
             # High confidence action intent - process through main agent
             enhanced_message = f"""Based on this image, the user wants to: {caption}
