@@ -344,8 +344,8 @@ async def keep_typing(chat_id, bot, stop_event):
     while not stop_event.is_set():
         try:
             await bot.send_chat_action(chat_id=chat_id, action="typing")
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Typing indicator failed: {e}")
         await asyncio.sleep(4)  # Typing indicator lasts ~5 seconds
 
 
@@ -359,6 +359,9 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     
     track_message(user_id, update.message.message_id)
+    
+    # Log user message
+    logger.info(f"CHAT [User {user_id}]: {user_message}")
     
     # Log activity
     try:
@@ -397,7 +400,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             msg = await update.message.reply_text(
                 response.text,
                 reply_markup=get_confirmation_keyboard(),
-                parse_mode="Markdown"
+                parse_mode=None
             )
             track_message(user_id, msg.message_id)
             return
@@ -411,6 +414,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 track_message(user_id, msg.message_id)
         else:
             msg = await update.message.reply_text(text)
+            logger.info(f"CHAT [Bot to {user_id}]: {text}")
             track_message(user_id, msg.message_id)
             
     except Exception as e:
@@ -497,7 +501,8 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         voice_bytes = await voice_file.download_as_bytearray()
         
         transcription = await agent.process_voice(bytes(voice_bytes))
-        msg = await update.message.reply_text(f"_{transcription}_", parse_mode="Markdown")
+        logger.info(f"CHAT [User {user_id} Voice]: {transcription}")
+        msg = await update.message.reply_text(f"You said: {transcription}")
         track_message(user_id, msg.message_id)
         
         response = await agent.process(transcription, user_id)
@@ -506,10 +511,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
             msg = await update.message.reply_text(
                 response.text,
                 reply_markup=get_confirmation_keyboard(),
-                parse_mode="Markdown"
+                parse_mode=None
             )
         else:
             msg = await update.message.reply_text(response.text)
+            logger.info(f"CHAT [Bot to {user_id}]: {response.text}")
         track_message(user_id, msg.message_id)
         
     except Exception as e:
@@ -552,6 +558,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo_file = await context.bot.get_file(photo.file_id)
         photo_bytes = await photo_file.download_as_bytearray()
         caption = update.message.caption or ""
+        logger.info(f"CHAT [User {user_id} Photo]: {caption}")
         logger.info(f"[IMAGE] Downloaded {len(photo_bytes)} bytes, caption: '{caption}'")
         
         # Process image with user context for smart actions
@@ -564,10 +571,10 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             msg = await update.message.reply_text(
                 response.text,
                 reply_markup=get_confirmation_keyboard(),
-                parse_mode="Markdown"
+                parse_mode=None
             )
         else:
-            logger.info(f"[IMAGE] Sending response to user: '{response.text[:100]}...'")
+            logger.info(f"CHAT [Bot to {user_id}]: {response.text}")
             msg = await update.message.reply_text(response.text)
         track_message(user_id, msg.message_id)
         logger.info(f"[IMAGE] Image processing completed successfully")
@@ -633,7 +640,7 @@ def run_bot():
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
-async def automation_scheduler():
+async def automation_scheduler(app):
     """Background task to check and run due automations every minute.
     
     This enables catch-up for missed scheduled tasks (e.g., if PC was off).
@@ -660,8 +667,15 @@ async def automation_scheduler():
                                 
                                 if settings.ALLOWED_USER_IDS:
                                     try:
-                                        response = await agent.process(data["prompt"], settings.ALLOWED_USER_IDS[0])
+                                        user_id = settings.ALLOWED_USER_IDS[0]
+                                        response = await agent.process(data["prompt"], user_id)
                                         terminal_ui.log_activity(f"Auto done: {auto_name}")
+                                        
+                                        # Send response to user via Telegram
+                                        if response.text and app:
+                                            await app.bot.send_message(chat_id=user_id, text=response.text)
+                                            logger.info(f"Sent automation response to {user_id}")
+                                            
                                     except Exception as agent_err:
                                         terminal_ui.log_error(f"Auto failed: {str(agent_err)[:80]}", "Agent")
                                         logger.error(f"Automation agent error for {auto_name}: {agent_err}", exc_info=True)
@@ -717,7 +731,7 @@ async def run_bot_async():
     await app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
     
     # Start automation scheduler in background
-    asyncio.create_task(automation_scheduler())
+    asyncio.create_task(automation_scheduler(app))
     logger.info("Automation scheduler started")
     
     # Keep running

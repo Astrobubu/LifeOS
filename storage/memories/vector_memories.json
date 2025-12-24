@@ -80,22 +80,22 @@
     "id": 7,
     "content": "User's interests and hobbies include making robots, websites, apps, and software/hardware-related projects.",
     "type": "fact",
-    "importance": 0.8,
+    "importance": 0.81,
     "source": "user_input",
     "created_at": "2025-11-27T18:36:29.342357",
-    "last_accessed": "2025-12-16T14:20:39.210197",
-    "access_count": 6,
+    "last_accessed": "2025-12-24T12:03:07.152683",
+    "access_count": 7,
     "metadata": {}
   },
   {
     "id": 8,
     "content": "Reminder for a meeting with the boys for Dubai App Challenge",
     "type": "event",
-    "importance": 0.9200000000000002,
+    "importance": 0.9700000000000002,
     "source": "user_input",
     "created_at": "2025-11-27T18:38:23.197705",
-    "last_accessed": "2025-12-24T11:45:33.443353",
-    "access_count": 39,
+    "last_accessed": "2025-12-29T13:10:41.584099",
+    "access_count": 44,
     "metadata": {}
   },
   {
@@ -113,11 +113,11 @@
     "id": 10,
     "content": "Reminder for a meeting with the boys for Dubai App Challenge",
     "type": "event",
-    "importance": 0.9200000000000002,
+    "importance": 0.9700000000000002,
     "source": "user_input",
     "created_at": "2025-11-27T18:40:54.634190",
-    "last_accessed": "2025-12-24T11:45:33.443353",
-    "access_count": 37,
+    "last_accessed": "2025-12-29T13:10:41.584099",
+    "access_count": 42,
     "metadata": {}
   },
   {
@@ -135,22 +135,22 @@
     "id": 12,
     "content": "User wants to schedule a session for 9 p.m.",
     "type": "event",
-    "importance": 0.8700000000000001,
+    "importance": 0.8800000000000001,
     "source": "user_input",
     "created_at": "2025-11-27T18:45:08.569194",
-    "last_accessed": "2025-12-24T11:45:33.443353",
-    "access_count": 16,
+    "last_accessed": "2025-12-29T13:09:48.697274",
+    "access_count": 17,
     "metadata": {}
   },
   {
     "id": 13,
     "content": "User prefers more detailed explanations for calendar button events rather than just a notification of a session.",
     "type": "preference",
-    "importance": 0.8600000000000001,
+    "importance": 0.8700000000000001,
     "source": "user_input",
     "created_at": "2025-11-27T18:45:34.191428",
-    "last_accessed": "2025-12-24T11:46:59.217372",
-    "access_count": 10,
+    "last_accessed": "2025-12-29T09:52:38.541852",
+    "access_count": 11,
     "metadata": {}
   },
   {
@@ -168,11 +168,11 @@
     "id": 15,
     "content": "Reminder for a meeting with the boys for Dubai App Challenge",
     "type": "event",
-    "importance": 0.9200000000000002,
+    "importance": 0.9700000000000002,
     "source": "user_input",
     "created_at": "2025-11-27T19:26:47.409257",
-    "last_accessed": "2025-12-24T11:45:33.443353",
-    "access_count": 33,
+    "last_accessed": "2025-12-29T13:10:41.584099",
+    "access_count": 38,
     "metadata": {}
   },
   {
@@ -190,11 +190,11 @@
     "id": 17,
     "content": "User wants to contact Innovations Group Dubai UAE and draft an email based on their website.",
     "type": "event",
-    "importance": 0.8,
+    "importance": 0.81,
     "source": "user_input",
     "created_at": "2025-11-27T19:37:03.714763",
-    "last_accessed": "2025-11-30T22:38:21.253700",
-    "access_count": 7,
+    "last_accessed": "2025-12-25T11:25:15.235694",
+    "access_count": 8,
     "metadata": {}
   },
   {
@@ -223,11 +223,11 @@
     "id": 20,
     "content": "User wants to contact Innovations Group and draft an email based on their website.",
     "type": "event",
-    "importance": 0.81,
+    "importance": 0.8200000000000001,
     "source": "user_input",
     "created_at": "2025-11-27T19:42:37.146069",
-    "last_accessed": "2025-12-21T00:50:53.965813",
-    "access_count": 5,
+    "last_accessed": "2025-12-25T11:25:15.235694",
+    "access_count": 6,
     "metadata": {}
   },
   {
@@ -256,11 +256,11 @@
     "id": 23,
     "content": "Location: Dubai, UAE",
     "type": "fact",
-    "importance": 0.8,
+    "importance": 0.81,
     "source": "user_input",
     "created_at": "2025-11-27T19:42:38.732342",
-    "last_accessed": "2025-12-14T17:42:22.445276",
-    "access_count": 5,
+    "last_accessed": "2025-12-29T09:51:45.243519",
+    "access_count": 6,
     "metadata": {}
   },
   {
@@ -289,33 +289,33 @@
     "id": 26,
     "content": "User prefers to keep it and wants all the info from this logged.",
     "type": "preference",
-    "importance": 0.6,
+    "importance": 0.67,
     "source": "user_input",
     "created_at": "2025-11-28T10:52:26.551478",
-    "last_accessed": "2025-11-28T10:52:27.238707",
-    "access_count": 1,
+    "last_accessed": "2025-12-29T17:09:33.175309",
+    "access_count": 8,
     "metadata": {}
   },
   {
     "id": 27,
     "content": "Borrowed a loan of ten dirhams from their mom.",
     "type": "event",
-    "importance": 0.5,
+    "importance": 0.52,
     "source": "user_input",
     "created_at": "2025-11-29T16:32:23.368129",
-    "last_accessed": "2025-12-16T14:19:47.218020",
-    "access_count": 9,
+    "last_accessed": "2025-12-29T12:25:47.810988",
+    "access_count": 11,
     "metadata": {}
   },
   {
     "id": 28,
     "content": "Loaned 28 dirhams to my dad.",
     "type": "event",
-    "importance": 0.6,
+    "importance": 0.62,
     "source": "user_input",
     "created_at": "2025-12-16T14:19:46.201991",
-    "last_accessed": "2025-12-16T14:19:47.218020",
-    "access_count": 1,
+    "last_accessed": "2025-12-29T12:25:47.810988",
+    "access_count": 3,
     "metadata": {}
   },
   {
@@ -325,8 +325,8 @@
     "importance": 1.0,
     "source": "user_input",
     "created_at": "2025-12-18T15:54:56.493941",
-    "last_accessed": "2025-12-24T08:25:28.764368",
-    "access_count": 23,
+    "last_accessed": "2025-12-30T14:48:32.116051",
+    "access_count": 32,
     "metadata": {}
   },
   {
@@ -336,19 +336,19 @@
     "importance": 1.0,
     "source": "user_input",
     "created_at": "2025-12-20T06:39:54.248227",
-    "last_accessed": "2025-12-24T08:25:28.764368",
-    "access_count": 30,
+    "last_accessed": "2025-12-30T14:50:13.079662",
+    "access_count": 46,
     "metadata": {}
   },
   {
     "id": 31,
     "content": "Prefers printed (typed) text rather than handwritten text.",
     "type": "preference",
-    "importance": 0.8,
+    "importance": 0.81,
     "source": "user_input",
     "created_at": "2025-12-20T19:14:57.938552",
-    "last_accessed": "2025-12-24T08:25:28.764368",
-    "access_count": 10,
+    "last_accessed": "2025-12-29T13:09:19.475716",
+    "access_count": 11,
     "metadata": {}
   },
   {
@@ -366,11 +366,11 @@
     "id": 33,
     "content": "User wants morning athkar, a 1-mile run, and evening athkar.",
     "type": "preference",
-    "importance": 0.63,
+    "importance": 0.6900000000000001,
     "source": "user_input",
     "created_at": "2025-12-23T19:43:52.008835",
-    "last_accessed": "2025-12-24T08:23:38.281611",
-    "access_count": 3,
+    "last_accessed": "2025-12-31T08:02:11.681905",
+    "access_count": 9,
     "metadata": {}
   },
   {
@@ -394,22 +394,22 @@
     "id": 35,
     "content": "User requested to finalize a solution for the last video of the Ermanet project.",
     "type": "event",
-    "importance": 0.8200000000000001,
+    "importance": 0.8300000000000001,
     "source": "user_input",
     "created_at": "2025-12-24T08:24:13.588275",
-    "last_accessed": "2025-12-24T08:25:06.143288",
-    "access_count": 2,
+    "last_accessed": "2025-12-24T12:04:05.638315",
+    "access_count": 3,
     "metadata": {}
   },
   {
     "id": 36,
     "content": "User prefers receiving a printed/plain text output rather than a task description.",
     "type": "preference",
-    "importance": 0.63,
+    "importance": 0.7800000000000001,
     "source": "user_input",
     "created_at": "2025-12-24T08:24:27.702097",
-    "last_accessed": "2025-12-24T08:25:28.764368",
-    "access_count": 3,
+    "last_accessed": "2025-12-29T13:10:41.584099",
+    "access_count": 18,
     "metadata": {}
   },
   {
@@ -433,11 +433,11 @@
     "id": 38,
     "content": "Image received: Below is a structured, detailed extraction of everything visible and relevant in the provided screenshot.\n\n1) Visual description (what the image shows)\n- A smartphone screenshot of an event listing page (from luma.com). The top and bottom of the phone UI (status bar, navigation area) are visible.\n- The main image in the listing is a wide-angle photo of an indoor auditorium/theater:\n  - Red walls, ",
     "type": "image_memory",
-    "importance": 0.71,
+    "importance": 0.72,
     "source": "image_upload",
     "created_at": "2025-12-24T10:44:42.529275",
-    "last_accessed": "2025-12-24T10:51:27.815842",
-    "access_count": 2,
+    "last_accessed": "2025-12-29T09:53:36.026010",
+    "access_count": 3,
     "metadata": {
       "caption": "",
       "entities": "",
@@ -450,11 +450,11 @@
     "id": 39,
     "content": "Image received: 1) Visual description\n- Screenshot of a mobile web page (luma.com) showing an event listing. The top of the phone screen shows status icons (time, data speed, battery).\n- Main image: an indoor theatre/auditorium with red walls, red tiered seating, central aisle and stepped rows, a raised stage in the foreground with small potted plants on it, stage monitors/speakers, overhead stage lighting rigs a",
     "type": "image_memory",
-    "importance": 0.72,
+    "importance": 0.73,
     "source": "image_upload",
     "created_at": "2025-12-24T10:45:44.655751",
-    "last_accessed": "2025-12-24T11:45:33.443353",
-    "access_count": 2,
+    "last_accessed": "2025-12-29T09:53:36.026010",
+    "access_count": 3,
     "metadata": {
       "caption": "",
       "entities": "",
@@ -467,11 +467,11 @@
     "id": 40,
     "content": "Image received: Below is a detailed, structured analysis of the provided screenshot.\n\n1) Visual description (what the image shows)\n- A portrait-oriented smartphone screenshot of an events page (web/app) that displays a photograph of a large indoor auditorium/theater. The auditorium has tiered seating with red seats and red walls/ceiling accents. There are stepped aisles and overhead stage lighting rigs visible. T",
     "type": "image_memory",
-    "importance": 0.7,
+    "importance": 0.71,
     "source": "image_upload",
     "created_at": "2025-12-24T11:38:33.502362",
-    "last_accessed": "2025-12-24T11:38:33.502362",
-    "access_count": 0,
+    "last_accessed": "2025-12-29T09:53:36.026010",
+    "access_count": 1,
     "metadata": {
       "caption": "",
       "entities": "",
@@ -484,17 +484,97 @@
     "id": 41,
     "content": "Image received: - Text: \"6:52 16.0 KB/s 37% luma i show my friend how to b... luma.com Explore Events Sign In Featured in Dubai i show my friend how to build his first ai app -- live on stage in dubai. Hosted by farza & Siddharth Haldar DEC 28 Sunday, December 28 12:30 PM - 2:30 PM GEMS Modern Academy Dubai, Dubai Starting in 4d 17h\"\n\n- Key Details:\n  - Event title: i show my friend how to build his first ai app ",
     "type": "image_memory",
-    "importance": 0.71,
+    "importance": 0.73,
     "source": "image_upload",
     "created_at": "2025-12-24T11:42:22.958907",
-    "last_accessed": "2025-12-24T11:42:44.339737",
-    "access_count": 1,
+    "last_accessed": "2025-12-29T09:53:55.494738",
+    "access_count": 3,
     "metadata": {
       "caption": "",
       "entities": "",
       "timestamp": "2025-12-24T11:42:22.516541",
       "detected_intent": "analyze",
       "full_description": "- Text: \"6:52 16.0 KB/s 37% luma i show my friend how to b... luma.com Explore Events Sign In Featured in Dubai i show my friend how to build his first ai app -- live on stage in dubai. Hosted by farza & Siddharth Haldar DEC 28 Sunday, December 28 12:30 PM - 2:30 PM GEMS Modern Academy Dubai, Dubai Starting in 4d 17h\"\n\n- Key Details:\n  - Event title: i show my friend how to build his first ai app -- live on stage in dubai.\n  - Hosts: farza & Siddharth Haldar\n  - Date: Sunday, December 28 (DEC 28)\n  - Time: 12:30 PM - 2:30 PM\n  - Location: GEMS Modern Academy, Dubai, Dubai\n  - Website: luma.com\n  - Countdown: Starting in 4d 17h"
+    }
+  },
+  {
+    "id": 42,
+    "content": "Has a task to 3D print an ESP model.",
+    "type": "event",
+    "importance": 0.7300000000000001,
+    "source": "user_input",
+    "created_at": "2025-12-24T12:05:50.397903",
+    "last_accessed": "2025-12-29T17:13:07.514141",
+    "access_count": 13,
+    "metadata": {}
+  },
+  {
+    "id": 43,
+    "content": "Previous session summary: User requested a printout of a task: \"finish wiring ESP32.\" Assistant confirmed the task was printed.",
+    "type": "insight",
+    "importance": 0.8200000000000002,
+    "source": "session_summary",
+    "created_at": "2025-12-28T06:51:46.646116",
+    "last_accessed": "2025-12-30T14:48:32.116051",
+    "access_count": 22,
+    "metadata": {}
+  },
+  {
+    "id": 44,
+    "content": "Note: Constant Labs â€” Projects\n\n# Constant Labs — Projects\n\n# Constant Labs — Projects\n\nSaved from site extraction performed on constantlabs.ai.\n\n## Active projects & experiments\n\n1. **MUFAKKIR** (PROJECT_ID: HF0OPS)\n   - Description: Voice-to-text Arabic transcription app with AI. Real-time speech recognition supporting 50+ languages and 10+ Arabic dialects. Transform thoughts into organized notes.\n   - Tags: AI, Speech-to-Text, Arabic, Multi-dialect\n   - Status: Live / Product\n\n2. **MOTARGEM** (PROJECT_ID: ILVJN2)\n   - Description: Universal translator: real-time translation with voice, text, and camera input. Natural conversations across languages.\n   - Tags: Translation AI, Real-time, Voice Input, Multi-language\n   - Status: Live / Product\n\n3. **SPEAK-TO-WINDOWS** (PROJECT_ID: B9I4VG)\n   - Description: Voice-controlled Windows automation tool. Speak commands to control your desktop and manage windows with NLP.\n   - Tags: JavaScript, Voice Recognition, Windows API, NLP\n   - Status: Repository\n\n4. **ATHKAR DESKTOP** (PROJECT_ID: VHLR13)\n   - Description: Desktop application for Islamic remembrance with notifications and polished UI for daily prayers.\n   - Tags: Electron, JavaScript, Node.js, Cross-platform\n   - Status: Repository\n\n5. **MOSQUE SILENCE** (PROJECT_ID: V88AZF)\n   - Description: Smart Android app that automatically silences phones near mosques using geolocation.\n   - Tags: Flutter, Dart, Geolocation, Android\n   - Status: Repository\n\n6. **MEDIEVAL QUEST JOURNAL** (PROJECT_ID: SO7TDN)\n   - Description: Immersive medieval-inspired quest tracker with rich 3-column UI for tabletop RPGs.\n   - Tags: HTML, CSS, JavaScript, Fantasy UI\n   - Status: Repository\n\n\n## Client deployments / selected case studies\n\n- **FZN DINING EXPERIENCE** (PROJECT_ID: 8B25S4)\n  - Description: Three Michelin-starred fine dining; reservation system, luxury UI (React, Framer Motion).\n  - Tags: React, Framer Motion, Reservations, UI/UX\n\n- **TOIT HOT CHICKEN** (PROJECT_ID: YB5L9I)\n  - Description: Menu showcase, online ordering, location finder (React, Vercel, Maps API).\n  - Tags: React, Vercel, Maps API, Ordering\n\n- **CUT IN HALF** (PROJECT_ID: TB5OKN)\n  - Description: Premium Wagyu burger chain, interactive menu and ordering integrations (React, Leaflet Maps, Vercel).\n  - Tags: React, Leaflet Maps, Vercel, Ordering\n\n\n## Notes\n- Source: constantlabs.ai site extraction\n- UI cues: site uses vault/access metaphors (THE_VAULT, ACCESS_GRANTED, ENCRYPTION_ENABLED)\n- Contact: no explicit email found on the scraped content; site shows an INITIATE_CONTACT CTA.\n",
+    "type": "general",
+    "importance": 0.8200000000000001,
+    "source": "migration",
+    "created_at": "2025-12-29T14:26:09.074647",
+    "last_accessed": "2025-12-29T17:09:33.175309",
+    "access_count": 2,
+    "metadata": {
+      "original_title": "Constant Labs â€” Projects",
+      "original_filename": "Constant_Labs___Projects.md",
+      "tags": [
+        "constant labs",
+        "projects",
+        "company"
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "content": "Note: Constant Labs â€” Projects (memory)\n\n# Constant Labs — Projects (memory)\n\nSummary of Constant Labs projects, case studies, and core team — saved to memory for Perfect.\n\nMission/Overview:\n- Group of builders focused on hardware + software, creating ambitious \"sci-fi\" scale projects. Tagline: BUILD. SHIP. REPEAT. // SCI-FI TODAY // REALITY TOMORROW\n\nActive Projects & Experiments:\n1. MUFAKKIR (PROJECT_ID: HF0OPS)\n   - Voice-to-text Arabic transcription app with AI.\n   - Real-time speech recognition supporting 50+ languages and 10+ Arabic dialects.\n   - Tags: AI, Speech-to-Text, Arabic, Multi-dialect\n\n2. MOTARGEM (PROJECT_ID: ILVJN2)\n   - Universal translator: real-time translation with voice, text, and camera input.\n   - Tags: Translation AI, Real-time, Voice Input, Multi-language\n\n3. SPEAK-TO-WINDOWS (PROJECT_ID: B9I4VG) — repository\n   - Voice-controlled Windows automation tool. NLP for desktop/window control.\n   - Tags: JavaScript, Voice Recognition, Windows API, NLP\n\n4. ATHKAR DESKTOP (PROJECT_ID: VHLR13) — repository\n   - Desktop app for Islamic remembrance with notifications and polished UI.\n   - Tags: Electron, JavaScript, Node.js, Cross-platform\n\n5. MOSQUE SILENCE (PROJECT_ID: V88AZF) — repository\n   - Smart Android app that auto-silences phones near mosques using geolocation.\n   - Tags: Flutter, Dart, Geolocation, Android\n\n6. MEDIEVAL QUEST JOURNAL (PROJECT_ID: SO7TDN) — repository\n   - Immersive medieval-inspired quest tracker for tabletop RPGs.\n   - Tags: HTML, CSS, JavaScript, Fantasy UI\n\nClient Deployments / Case Studies:\n- FZN DINING EXPERIENCE (PROJECT_ID: 8B25S4)\n  - Three Michelin-starred fine dining; reservation system, luxury UI (React, Framer Motion)\n\n- TOIT HOT CHICKEN (PROJECT_ID: YB5L9I)\n  - Menu showcase, online ordering, location finder (React, Vercel, Maps API)\n\n- CUT IN HALF (PROJECT_ID: TB5OKN)\n  - Premium Wagyu burger chain, interactive menu and ordering integrations (React, Leaflet Maps, Vercel)\n\nCore Team / Operators:\n- Ahmad Hasan (OPERATOR_ID: OP-WYY9) — Co-founder / Architect\n  - Background: 3D fabrication, hardware engineering, applied physics (dropped out), astronomical research, built observatories; now architecture for digital experiences.\n\n- Mohammed Tamer (OPERATOR_ID: OP-PJCB) — Co-founder / Creative Director\n  - Background: Computer engineering, astrophotography, 3D design, video production; now crafting visual experiences.\n\nOther notes:\n- Site uses \"vault\" / access metaphors and CTAs (THE_VAULT, INITIATE_CONTACT), no raw contact email scraped from main content.\n- Projects labeled LIVE or REPOSITORY and include capability tags.\n\nTags: constant-labs, projects, company-memory, perfect\n\nSaved to memory on 2025-11-28 by LifeOS for user Perfect. Use for future reference (email drafting, project management, cross-references).\n\nSite metadata\n- Title: Constant Labs - Building Digital Experiences That Break Boundaries\n- Tagline / hero: BUILD. SHIP. REPEAT. // SCI-FI TODAY // REALITY TOMORROW\n- Visible CTAs: ENTER_VAULT, INITIATE_CONTACT, WHO_WE_ARE, THE_VAULT\n\nMission / Overview\n- Description: \"We are a group of builders pushing the boundaries of what's possible. Our goal is to create a new wave of technology—the kind most would call sci‑fi. We're here to make it real. To make it achievable. To make it something you can touch, use, and rely on. Hardware and software. No limits.\"\n\nCore focus areas\n- Hardware\n- Software\n- Emphasis: cross-disciplinary, hardware + software, ambitious / sci‑fi scale projects\n\nActive projects & experiments (publicly listed)\n1. MUFAKKIR (PROJECT_ID: HF0OPS)\n   - Description: Voice-to-text Arabic transcription app with AI. Real-time speech recognition supporting 50+ languages and 10+ Arabic dialects. Transform thoughts into organized notes.\n   - Tags: AI, Speech-to-Text, Arabic, Multi-dialect\n\n2. MOTARGEM (PROJECT_ID: ILVJN2)\n   - Description: Universal translator: real-time translation with voice, text, and camera input. Natural conversations across languages.\n   - Tags: Translation AI, Real-time, Voice Input, Multi-language\n\n3. SPEAK-TO-WINDOWS (PROJECT_ID: B9I4VG) — repository\n   - Description: Voice-controlled Windows automation tool. Speak commands to control your desktop and manage windows with NLP.\n   - Tags: JavaScript, Voice Recognition, Windows API, NLP\n\n4. ATHKAR DESKTOP (PROJECT_ID: VHLR13) — repository\n   - Description: Desktop application for Islamic remembrance with notifications and polished UI for daily prayers.\n   - Tags: Electron, JavaScript, Node.js, Cross-platform\n\n5. MOSQUE SILENCE (PROJECT_ID: V88AZF) — repository\n   - Description: Smart Android app that automatically silences phones near mosques using geolocation.\n   - Tags: Flutter, Dart, Geolocation, Android\n\n6. MEDIEVAL QUEST JOURNAL (PROJECT_ID: SO7TDN) — repository\n   - Description: Immersive medieval-inspired quest tracker with rich 3-column UI for tabletop RPGs.\n   - Tags: HTML, CSS, JavaScript, Fantasy UI\n\nClient deployments / selected case studies\n- FZN DINING EXPERIENCE (PROJECT_ID: 8B25S4)\n  - Three Michelin-starred fine dining; reservation system, luxury UI (React, Framer Motion)\n- TOIT HOT CHICKEN (PROJECT_ID: YB5L9I)\n  - Menu showcase, online ordering, location finder (React, Vercel, Maps API)\n- CUT IN HALF (PROJECT_ID: TB5OKN)\n  - Premium Wagyu burger chain, interactive menu and ordering integrations (React, Leaflet Maps, Vercel)\n\nCore team / operators (listed)\n- Ahmad Hasan (OPERATOR_ID: OP-WYY9) — Co-founder / Architect\n  - Background: 3D fabrication, hardware engineering, applied physics (dropped out), astronomical research, built observatories; now architecture for digital experiences.\n\n- Mohammed Tamer (OPERATOR_ID: OP-PJCB) — Co-founder / Creative Director\n  - Background: Computer engineering, astrophotography, 3D design, video production; now crafting visual experiences.\n\nOther notes / UI cues found\n- Site uses vault / access metaphors: [THE_VAULT], // ACCESS_GRANTED // ENCRYPTION_ENABLED //\n- Many projects marked as LIVE or REPOSITORY and shown with capability tags\n- No explicit contact email visible in the extracted content (site shows INITIATE_CONTACT CTA but no raw email scraped)\n\nSaved-by: LifeOS\nTags: constant labs, projects, company\n\nSource: extracted from constantlabs.ai site crawl (content pulled earlier in this conversation).",
+    "type": "general",
+    "importance": 0.8200000000000001,
+    "source": "migration",
+    "created_at": "2025-12-29T14:26:09.699115",
+    "last_accessed": "2025-12-29T17:09:33.175309",
+    "access_count": 2,
+    "metadata": {
+      "original_title": "Constant Labs â€” Projects (memory)",
+      "original_filename": "Constant_Labs___Projects__memory_.md",
+      "tags": [
+        "constant-labs",
+        "projects",
+        "company-memory",
+        "perfect"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "content": "Note: Smart Roads UAE - National Traffic AI System (proposal sent 2025-11-30)\n\n# Smart Roads UAE - National Traffic AI System (proposal sent 2025-11-30)\n\nSent to: info@accelerators.gov.ae on 30 Nov 2025, 21:53\nFrom: Ahmad Hasan <akhmad6093@gmail.com>\n\nSummary:\nAI-powered traffic system that increases highway throughput by 20-40% by coordinating 20-40% of vehicles to eliminate phantom jams.\n\nKey benefits:\n- Addresses AED 3.5B annual congestion cost in UAE\n- Reduces 1,200+ annual road fatalities\n- 98% detection accuracy, validated across 2M+ vehicle passes\n- Creates export industry: build in UAE, sell globally\n\n24-month roadmap:\nPhase 1: Sheikh Zayed Road pilot (6 months, 10%+ improvement)\nPhase 2: Dubai city-wide (12 months, 15-20% improvement)\nPhase 3: National deployment (6 months, 25-30% improvement)\n\nStrategic value: requires nationwide RTK GPS network (200-300 stations) as foundation for AVs, UAM, drone economy.\n\nPresentation: www.constantlabs.ai/smartroads\nContact: Ahmad Hasan, Founder at Constant Labs, +971561495656\n\nNotes:\n- User asked assistant to keep this in mind when discussing the project and to find places in UAE/Dubai where the proposal can be sent.",
+    "type": "general",
+    "importance": 0.8,
+    "source": "migration",
+    "created_at": "2025-12-29T14:26:10.490523",
+    "last_accessed": "2025-12-29T14:26:10.490523",
+    "access_count": 0,
+    "metadata": {
+      "original_title": "Smart Roads UAE - National Traffic AI System (proposal sent 2025-11-30)",
+      "original_filename": "Smart_Roads_UAE_-_National_Traffic_AI_System__prop.md",
+      "tags": [
+        "project",
+        "smart-roads",
+        "sent-email"
+      ]
     }
   }
 ]

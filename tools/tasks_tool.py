@@ -119,14 +119,13 @@ class TasksTool(BaseTool):
         return [
             self._make_schema(
                 name="add_task",
-                description="Add a new task. Use recurrence for daily/weekly/monthly repeating tasks.",
+                description="Add a new task (one-time only). For recurring tasks, use the Automations agent.",
                 parameters={
                     "title": {"type": "string", "description": "Task title/description"},
                     "priority": {"type": "string", "enum": ["low", "medium", "high"], "description": "Task priority"},
                     "due_date": {"type": "string", "description": "Due date in YYYY-MM-DD format"},
                     "tags": {"type": "array", "items": {"type": "string"}, "description": "Tags for the task"},
-                    "project": {"type": "string", "description": "Project this task belongs to"},
-                    "recurrence": {"type": "string", "enum": ["daily", "weekly", "monthly"], "description": "How often task repeats"}
+                    "project": {"type": "string", "description": "Project this task belongs to"}
                 },
                 required=["title"]
             ),

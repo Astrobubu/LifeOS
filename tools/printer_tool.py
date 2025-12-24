@@ -82,7 +82,16 @@ class PrinterTool(BaseTool):
                 return ToolResult(success=False, error="No task provided")
 
             print(f"🖨️ Printing Task Card: '{task_description[:30]}' (Level {importance})...")
-            self.task_printer.print_task(task_description, importance, style)
+            
+            # Run blocking print job in thread to prevent freezing bot
+            import asyncio
+            await asyncio.to_thread(
+                self.task_printer.print_task, 
+                task_description, 
+                importance, 
+                style
+            )
+            
             return ToolResult(success=True, data="✓ Printed task card")
         
         except Exception as e:
@@ -96,7 +105,15 @@ class PrinterTool(BaseTool):
             
             # Just pass raw text - renderer handles word-wrap via CSS
             print(f"🖨️ Printing: '{(title or text[:25])[:25]}...'")
-            self.text_printer.print_long_text(text, title or "")
+            
+            # Run blocking print job in thread
+            import asyncio
+            await asyncio.to_thread(
+                self.text_printer.print_long_text,
+                text,
+                title or ""
+            )
+            
             return ToolResult(success=True, data="✓ Printed")
         
         except Exception as e:

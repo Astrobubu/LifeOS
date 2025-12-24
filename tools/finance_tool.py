@@ -36,11 +36,14 @@ class FinanceTool(BaseTool):
         return [
             self._make_schema(
                 name="add_loan",
-                description="Record a loan - money you owe someone or someone owes you",
+                description="""Record a loan. CRITICAL: Pay close attention to WHO owes WHOM!
+                - 'I borrowed from X' / 'X lent me' / 'I owe X' → direction='i_owe' (USER owes the person)
+                - 'X borrowed from me' / 'I lent X' / 'X owes me' → direction='they_owe' (person owes USER)
+                If updating an existing loan with someone, check their current loans first to add to the right direction.""",
                 parameters={
                     "person": {"type": "string", "description": "Name of the person"},
                     "amount": {"type": "number", "description": "Amount of money"},
-                    "direction": {"type": "string", "enum": ["i_owe", "they_owe"], "description": "Who owes whom"},
+                    "direction": {"type": "string", "enum": ["i_owe", "they_owe"], "description": "i_owe = USER owes this person | they_owe = this person owes the USER"},
                     "note": {"type": "string", "description": "Optional note about the loan"}
                 },
                 required=["person", "amount", "direction"]

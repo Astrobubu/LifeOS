@@ -1,5 +1,9 @@
-"""
-Smart Agent - Autonomous AI with planning, memory, and self-correction
+"""Smart Agent - Autonomous AI with TRUE agentic architecture
+
+Following Anthropic Orchestrator-Workers pattern:
+- Master Agent: Uses LLM to THINK, PLAN, and DELEGATE
+- Sub-Agents: Autonomous agents for each domain with their own LLM + tools
+- Working Memory: State persistence across steps and sessions
 """
 import json
 from typing import Optional
@@ -12,8 +16,10 @@ from memory.vector_memory import VectorMemory
 from profile.user_profile import get_profile
 from tools import get_all_tool_schemas, get_tool
 from tools.base_tool import ToolResult
+from tools.finance_tool import FinanceTool
 from .memory_extractor import MemoryExtractor
 from .confirmation import confirmation_manager
+from .master_agent import MasterAgent
 from utils.cost_tracker import cost_tracker
 from utils.terminal_ui import terminal_ui
 
@@ -65,6 +71,12 @@ SYSTEM_PROMPT = """You are LifeOS, an intelligent autonomous AI assistant for {u
 - Don't explain what you're doing unless asked
 - Short responses unless user needs explanation
 
+### 3.5. PRINT = JUST DO IT
+- When user says "print" (print task, print text, print this) → CALL THE PRINTER TOOL IMMEDIATELY
+- NO analyzing, NO questioning, NO explaining what you're about to print
+- Extract the key content and print_task or print_text directly
+- Response after printing: "✓ Printed" - that's it
+
 ### 4. PROACTIVE THINKING
 - Notice patterns in what user asks for
 - Suggest improvements when appropriate
@@ -79,6 +91,9 @@ SYSTEM_PROMPT = """You are LifeOS, an intelligent autonomous AI assistant for {u
 ## Memory Context
 {memory_context}
 
+## Domain Context
+{domain_context}
+
 ## Current Time
 {current_time}
 """
@@ -86,12 +101,18 @@ SYSTEM_PROMPT = """You are LifeOS, an intelligent autonomous AI assistant for {u
 
 class SmartAgent:
     """
-    Autonomous agent with:
-    - Vector memory for semantic search
-    - User profile awareness
-    - Automatic memory extraction
-    - Autonomous execution (confirm only final actions)
+    Autonomous agent with TRUE agentic architecture.
+    
+    Uses MasterAgent (orchestrator) which:
+    - Uses LLM to understand and PLAN complex requests
+    - Delegates to specialized sub-agents (each with own LLM + tools)
+    - Synthesizes results into coherent responses
+    
+    Falls back to legacy processing if master agent fails.
     """
+    
+    # Use TRUE agentic system (set to False for legacy mode)
+    USE_MASTER_AGENT = True
     
     def __init__(self):
         self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
@@ -102,9 +123,12 @@ class SmartAgent:
         self.conversation_history: list[dict] = []
         # Context management
         self.last_interaction_time: datetime = datetime.now()
+        
+        # NEW: Master Agent for true agentic processing
+        self.master_agent = MasterAgent()
     
     async def process(self, user_message: str, user_id: int) -> AgentResponse:
-        """Main entry point - process user message intelligently"""
+        """Main entry point - process through master agent or legacy"""
         terminal_ui.set_status("Thinking...")
         terminal_ui.log_activity(f"Message: {user_message[:40]}...")
         
@@ -134,6 +158,49 @@ class SmartAgent:
         except Exception:
             pass  # Non-critical
         
+        # === FAST-PATH ROUTING (skip planning for simple requests) ===
+        fast_route = self._detect_fast_path(user_message)
+        if fast_route:
+            terminal_ui.log_activity(f"Fast-path: {fast_route['agent']}")
+            try:
+                result = await self._execute_fast_path(fast_route, user_message)
+                self._update_history(user_message, result.text)
+                terminal_ui.set_status("Running")
+                return result
+            except Exception as e:
+                terminal_ui.log_activity(f"Fast-path failed, using master: {str(e)[:50]}")
+        
+        # === TRUE AGENTIC SYSTEM ===
+        if self.USE_MASTER_AGENT:
+            try:
+                # Process through Master Agent
+                master_response = await self.master_agent.process(user_message, user_id)
+                
+                # Update our conversation history from master
+                self._update_history(user_message, master_response.text)
+                
+                # Extract and store memories (background)
+                await self._extract_memories(user_message, master_response.text)
+                
+                terminal_ui.set_status("Running")
+                
+                return AgentResponse(
+                    text=master_response.text,
+                    needs_confirmation=master_response.needs_confirmation,
+                    confirmation_action=master_response.confirmation_action,
+                    confirmation_description=master_response.confirmation_description
+                )
+                
+            except Exception as e:
+                # Fallback to legacy processing on master agent error
+                terminal_ui.log_error(f"Master agent error: {str(e)[:100]}", "Agentic")
+                terminal_ui.log_activity("Falling back to legacy processing")
+        
+        # === LEGACY PROCESSING (fallback) ===
+        return await self._process_legacy(user_message, user_id)
+    
+    async def _process_legacy(self, user_message: str, user_id: int) -> AgentResponse:
+        """Legacy processing method - used as fallback"""
         # Get relevant memory context
         memory_context = await self.memory.get_context(user_message)
         
@@ -195,10 +262,14 @@ class SmartAgent:
         user_name = self.profile.get("name", "User")
         user_profile = self.profile.get_context_for_ai() if self.profile.is_setup else "Profile not set up yet."
         
+        # Detect intent and load relevant domain context
+        domain_context = self._get_domain_context(user_message)
+        
         system = SYSTEM_PROMPT.format(
             user_name=user_name,
             user_profile=user_profile,
             memory_context=memory_context or "No relevant memories.",
+            domain_context=domain_context,
             current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
         
@@ -211,6 +282,89 @@ class SmartAgent:
         messages.append({"role": "user", "content": user_message})
         return messages
     
+    def _detect_intent(self, message: str) -> list[str]:
+        """Detect message intent to load relevant context"""
+        msg_lower = message.lower()
+        intents = []
+        
+        # Loan/money keywords
+        loan_keywords = ["owe", "owes", "loan", "lend", "lent", "borrow", "borrowed", "debt", "pay back", "paid", "money", "aed", "usd", "dirhams", "$"]
+        if any(kw in msg_lower for kw in loan_keywords):
+            intents.append("loans")
+        
+        # Check for person names that have active loans
+        try:
+            finance = FinanceTool()
+            loans = finance._load_loans()
+            loan_people = {l.get("person", "").lower() for l in loans if l.get("status") == "active"}
+            if any(person in msg_lower for person in loan_people if person):
+                intents.append("loans")
+        except Exception:
+            pass
+        
+        # Notes keywords  
+        note_keywords = ["note", "notes", "write", "wrote", "jot", "draft", "document"]
+        if any(kw in msg_lower for kw in note_keywords):
+            intents.append("notes")
+        
+        # Task keywords
+        task_keywords = ["task", "todo", "remind", "reminder", "do", "doing", "done"]
+        if any(kw in msg_lower for kw in task_keywords):
+            intents.append("tasks")
+        
+        return list(set(intents))  # Remove duplicates
+    
+    def _get_domain_context(self, user_message: str) -> str:
+        """Get domain-specific context based on detected intent"""
+        intents = self._detect_intent(user_message)
+        
+        if not intents:
+            return "No specific domain context needed."
+        
+        context_parts = []
+        
+        if "loans" in intents:
+            context_parts.append(self._get_loans_context())
+        
+        # Can add more domain contexts here as needed:
+        # if "notes" in intents:
+        #     context_parts.append(self._get_notes_context())
+        
+        return "\n\n".join(context_parts) if context_parts else "No specific domain context."
+    
+    def _get_loans_context(self) -> str:
+        """Get active loans formatted for context"""
+        try:
+            finance = FinanceTool()
+            loans = finance._load_loans()
+            active = [l for l in loans if l.get("status") == "active"]
+            
+            if not active:
+                return "LOANS: No active loans."
+            
+            # Group by person
+            i_owe = []
+            they_owe = []
+            for loan in active:
+                person = loan.get("person", "Unknown")
+                amount = loan.get("amount", 0)
+                if loan.get("direction") == "i_owe":
+                    i_owe.append(f"  - {person}: {amount}")
+                else:
+                    they_owe.append(f"  - {person}: {amount}")
+            
+            lines = ["LOANS (use this to understand who owes whom):"]
+            if i_owe:
+                lines.append("YOU OWE these people (direction=i_owe):")
+                lines.extend(i_owe)
+            if they_owe:
+                lines.append("These people OWE YOU (direction=they_owe):")
+                lines.extend(they_owe)
+            
+            return "\n".join(lines)
+        except Exception:
+            return "LOANS: Unable to load."
+    
     async def _call_llm(self, messages: list[dict]):
         """Call OpenAI with tools - with comprehensive error handling"""
         try:
@@ -220,8 +374,12 @@ class SmartAgent:
                 tools=self.tool_schemas if self.tool_schemas else None,
                 tool_choice="auto" if self.tool_schemas else None,
                 temperature=1,
-                max_completion_tokens=2000
+                max_completion_tokens=6000
             )
+            
+            # Check for truncation - error directly to user
+            if response.choices[0].finish_reason == "length":
+                raise Exception("❌ Response was cut off (token limit hit). Try a simpler request.")
             
             # Track token usage
             if response.usage:
@@ -387,6 +545,70 @@ class SmartAgent:
         except Exception:
             pass  # Memory extraction is non-critical
     
+    def _detect_fast_path(self, message: str) -> dict | None:
+        """
+        Detect if message matches a simple pattern that can skip planning.
+        Returns routing info or None if planning is needed.
+        """
+        import re
+        msg = message.lower().strip()
+        
+        # Pattern → (agent, task_extractor)
+        patterns = [
+            # Reprint / run automation (HIGHEST PRIORITY)
+            (r'^reprint\s+(.+)', 'automations', lambda m: f"Run the automation matching: {m.group(1)}"),
+            (r'^run\s+(.+)\s+again', 'automations', lambda m: f"Run the automation matching: {m.group(1)}"),
+            
+            # One-time print
+            (r'^print\s+(?:task\s+)?(.+)', 'print', lambda m: f"Print task card: {m.group(1)}"),
+            
+            # Reminders
+            (r'^remind\s+me\s+(.+)', 'calendar', lambda m: f"Create reminder: {m.group(1)}"),
+            
+            # Loans (simple patterns)
+            (r'^i\s+owe\s+(\w+)\s+(\d+)', 'finance', lambda m: f"Record loan: I owe {m.group(1)} {m.group(2)}"),
+            (r'^(\w+)\s+owes\s+me\s+(\d+)', 'finance', lambda m: f"Record loan: {m.group(1)} owes me {m.group(2)}"),
+            
+            # List commands
+            (r'^list\s+(automations?|tasks?|loans?|notes?)', 'automations', lambda m: f"List all {m.group(1)}"),
+        ]
+        
+        for pattern, agent, task_fn in patterns:
+            match = re.match(pattern, msg)
+            if match:
+                return {
+                    'agent': agent,
+                    'task': task_fn(match),
+                    'original': message
+                }
+        
+        return None
+    
+    async def _execute_fast_path(self, route: dict, original_message: str) -> AgentResponse:
+        """Execute a fast-path route directly through sub-agent."""
+        from .sub_agents import (
+            PrintSubAgent, AutomationsSubAgent, CalendarSubAgent, FinanceSubAgent
+        )
+        
+        agent_map = {
+            'print': PrintSubAgent,
+            'automations': AutomationsSubAgent,
+            'calendar': CalendarSubAgent,
+            'finance': FinanceSubAgent,
+        }
+        
+        agent_class = agent_map.get(route['agent'])
+        if not agent_class:
+            raise ValueError(f"No fast-path agent for: {route['agent']}")
+        
+        agent = agent_class()
+        result = await agent.execute(route['task'], {'original_message': original_message})
+        
+        if result.success:
+            return AgentResponse(text=result.output)
+        else:
+            raise Exception(result.error or "Sub-agent failed")
+    
     async def _summarize_and_clear_context(self):
         """Summarize old conversation and clear history after timeout"""
         if not self.conversation_history:
@@ -449,7 +671,7 @@ class SmartAgent:
     async def process_voice(self, audio_bytes: bytes) -> str:
         """Transcribe voice"""
         transcript = await self.client.audio.transcriptions.create(
-            model="gpt-4o-mini-transcribe",
+            model="gpt-4o-transcribe",
             file=("voice.ogg", audio_bytes, "audio/ogg")
         )
         return transcript.text
@@ -473,6 +695,7 @@ Caption: "{caption}"
 Image content summary: {extracted_info[:300]}
 
 Possible intents:
+- print: wants to PRINT this (keywords: print, printer, output, physical copy). HIGH PRIORITY - if any print keyword found, choose this.
 - contact: wants to reach out to someone (email, call, add contact)
 - save_note: wants to save this information as a note
 - remember: wants to store specific facts from the image
@@ -481,7 +704,7 @@ Possible intents:
 
 Return JSON with:
 {{
-  "intent": "contact|save_note|remember|analyze|no_action",
+  "intent": "print|contact|save_note|remember|analyze|no_action",
   "confidence": 0.0-1.0,
   "reasoning": "brief explanation of why you chose this intent",
   "suggested_action": "what the user likely wants done"
@@ -604,6 +827,24 @@ Return a simple comma-separated list of key entities (max 10)."""
             pass  # Memory storage is non-critical
         
         # Step 4: Execute action based on intent and confidence
+        
+        # PRINT INTENT - fast path, no overthinking
+        if intent == "print" and confidence >= 0.5:
+            # Extract just the essential text/task from image_info for printing
+            print_text = image_info.strip()
+            # Keep it short - just the key text, no descriptions
+            if len(print_text) > 300:
+                # Let agent decide what to print but with clear instruction
+                return await self.process(
+                    f"Print this exactly, no questions: {print_text[:500]}",
+                    user_id
+                )
+            else:
+                return await self.process(
+                    f"Print this task: {print_text}",
+                    user_id
+                )
+        
         if confidence >= 0.6 and intent in ["contact", "save_note", "remember"] and user_id:
             # High confidence action intent - process through main agent
             enhanced_message = f"""Based on this image, the user wants to: {caption}

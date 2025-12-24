@@ -44,7 +44,7 @@ class CostTracker:
         today = date.today().isoformat()
         
         # Get pricing for model
-        pricing = PRICING.get(model, PRICING.get("gpt-4o-mini"))
+        pricing = PRICING.get(model, PRICING.get("gpt-5-nano"))
         
         # Calculate cost
         input_cost = (input_tokens / 1_000_000) * pricing["input"]

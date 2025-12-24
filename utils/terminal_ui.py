@@ -21,12 +21,19 @@ class TerminalUI:
         self.start_time = datetime.now()
         self.errors: deque = deque(maxlen=50)
         self.activities: deque = deque(maxlen=30)
+        self.messages: deque = deque(maxlen=20)  # Chat messages
         self._lock = threading.Lock()
         self.request_count = 0
         self.current_status = "Starting..."
+        self.input_buffer = ""  # Current input being typed
+        self.input_enabled = True  # Allow terminal input
     
     def log_error(self, error: str, source: str = "System"):
         """Log an error - full message, no truncation"""
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"[{source}] {error}")
+        
         with self._lock:
             timestamp = datetime.now().strftime("%H:%M:%S")
             self.errors.appendleft({
@@ -41,6 +48,21 @@ class TerminalUI:
             timestamp = datetime.now().strftime("%H:%M:%S")
             self.activities.appendleft(f"[dim]{timestamp}[/] {activity}")
             self.request_count += 1
+    
+    def log_message(self, role: str, content: str):
+        """Log a chat message"""
+        with self._lock:
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            if role == "user":
+                self.messages.append(f"[dim]{timestamp}[/] [bold cyan]You:[/] {content}")
+            else:
+                # Truncate long responses for display
+                display = content[:200] + "..." if len(content) > 200 else content
+                self.messages.append(f"[dim]{timestamp}[/] [bold green]AI:[/] {display}")
+    
+    def set_input(self, text: str):
+        """Update the input buffer display"""
+        self.input_buffer = text
     
     def set_status(self, status: str):
         """Set current status"""
@@ -120,13 +142,31 @@ class TerminalUI:
         )
     
     def make_status(self) -> Panel:
-        """Create status bar"""
+        """Create status bar with input"""
         status_color = "green" if self.current_status == "Running" else "yellow"
-        text = f"[{status_color}]{self.current_status}[/]  [dim]|  Commands: exit, backup, clear[/]"
+        
+        # Show input prompt
+        if self.input_enabled:
+            input_display = self.input_buffer if self.input_buffer else ""
+            input_line = f"[bold white]>[/] {input_display}[blink]_[/]"
+        else:
+            input_line = "[dim]Input disabled[/]"
+        
+        text = f"[{status_color}]{self.current_status}[/]  |  {input_line}  [dim]| exit, backup, clear[/]"
         return Panel(text, box=box.ROUNDED, style="dim", padding=(0, 0))
     
+    def make_chat(self) -> Panel:
+        """Create chat panel showing recent messages"""
+        if not self.messages:
+            content = Text("No messages yet. Type below to chat.", style="dim")
+        else:
+            lines = list(self.messages)[-10:]  # Last 10 messages
+            content = "\n".join(lines)
+        
+        return Panel(content, title="[bold]Chat[/]", border_style="cyan", box=box.ROUNDED, padding=(0, 1))
+    
     def make_layout(self) -> Layout:
-        """Create the main layout - uses full screen"""
+        """Create the main layout with chat panel"""
         layout = Layout()
         
         layout.split(
@@ -141,11 +181,12 @@ class TerminalUI:
         )
         
         layout["left"].split(
-            Layout(name="stats", size=10),
-            Layout(name="activity", ratio=1)
+            Layout(name="stats", size=8),
+            Layout(name="chat", ratio=1)  # Chat replaces some of activity
         )
         
         layout["right"].split(
+            Layout(name="activity", ratio=1),
             Layout(name="errors", ratio=1)
         )
         
@@ -155,6 +196,7 @@ class TerminalUI:
         """Refresh all panels"""
         layout["header"].update(self.make_header())
         layout["stats"].update(self.make_stats())
+        layout["chat"].update(self.make_chat())
         layout["activity"].update(self.make_activity())
         layout["errors"].update(self.make_errors())
         layout["status"].update(self.make_status())

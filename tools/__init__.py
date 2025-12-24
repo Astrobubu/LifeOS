@@ -8,17 +8,22 @@ from .browser_tool import BrowserTool
 from .web_search_tool import WebSearchTool
 from .printer_tool import PrinterTool
 from .automations_tool import AutomationsTool
+from .memory_tool import MemoryTool
 
 AVAILABLE_TOOLS = {
     'tasks': TasksTool,
     'calendar': CalendarTool,
-    'notes': NotesTool,
+    'notes': MemoryTool,  # Deprecated notes → memory
+    'memory': MemoryTool,
     'gmail': GmailTool,
     'finance': FinanceTool,
     'browser': BrowserTool,
     'web_search': WebSearchTool,
     'printer': PrinterTool,
-    'automations': AutomationsTool
+    'automations': AutomationsTool,
+    'taskmaster': TasksTool,
+    'task_manager': TasksTool,
+    'notification': TasksTool
 }
 
 def get_tool(tool_name: str) -> BaseTool:

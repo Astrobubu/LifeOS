@@ -47,8 +47,8 @@ class AutomationsTool(BaseTool):
                 parameters={
                     "name": {"type": "string", "description": "Automation name"},
                     "type": {"type": "string", "enum": ["action", "prompt", "routine"], "description": "Type of automation"},
-                    "schedule": {"type": "string", "enum": ["hourly", "daily", "weekly", "on_start"], "description": "When to run"},
-                    "time": {"type": "string", "description": "Time to run (HH:MM format, e.g., '09:00')"},
+                    "schedule": {"type": "string", "enum": ["hourly", "daily", "weekly", "on_start", "once"], "description": "When to run ('once' requires full ISO datetime in 'time')"},
+                    "time": {"type": "string", "description": "Time to run (HH:MM for daily, or ISO datetime for 'once')"},
                     "action_tool": {"type": "string", "description": "For 'action' type: which tool to call (e.g., 'printer', 'gmail')"},
                     "action_function": {"type": "string", "description": "For 'action' type: which function (e.g., 'print_task', 'read_emails')"},
                     "action_args": {"type": "object", "description": "For 'action' type: arguments to pass to the function"},
@@ -314,9 +314,13 @@ class AutomationsTool(BaseTool):
                 # Only run if never run before
                 should_run = last_run is None
             elif a["schedule"] == "hourly":
+                if last_run and last_run.tzinfo:
+                    last_run = last_run.replace(tzinfo=None)
                 should_run = last_run is None or (now - last_run) >= timedelta(hours=1)
             elif a["schedule"] == "daily":
                 # Check if it hasn't run today
+                if last_run and last_run.tzinfo:
+                    last_run = last_run.replace(tzinfo=None)
                 ran_today = last_run is not None and last_run.date() == now.date()
                 
                 if not ran_today:
@@ -334,15 +338,39 @@ class AutomationsTool(BaseTool):
                         should_run = True
 
             elif a["schedule"] == "weekly":
+                if last_run and last_run.tzinfo:
+                    last_run = last_run.replace(tzinfo=None)
                 should_run = last_run is None or (now - last_run) >= timedelta(days=7)
+            
+            elif a["schedule"] == "once":
+                # Run once at specific datetime
+                if a.get("time"):
+                    try:
+                        target_dt = datetime.fromisoformat(a["time"])
+                        if target_dt.tzinfo:
+                            target_dt = target_dt.replace(tzinfo=None)
+                        if now >= target_dt:
+                            should_run = True
+                    except ValueError:
+                        pass # Invalid time format
             
             if should_run:
                 result = await self._execute_automation(a)
                 a["last_run"] = now.isoformat()
                 a["run_count"] = a.get("run_count", 0) + 1
                 results.append(result)
+                
+                # Auto-delete "once" automations after success
+                if a["schedule"] == "once":
+                    a["enabled"] = False # Disable or delete? Disable allows history.
+                    # Or maybe delete to keep list clean?
+                    # Let's delete it from the next save
+                    # We can't modify list while iterating easily, so mark for deletion
+                    a["_delete_me"] = True
         
         if results:
+            # Filter out deleted one-time automations
+            automations = [a for a in automations if not a.get("_delete_me")]
             self._save_automations(automations)
         
         return results
