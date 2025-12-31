@@ -1,77 +1,93 @@
 # LifeOS
 
-**LifeOS** is an intelligent, CLI-based personal assistant designed to manage tasks, notes, finances, and even print physical task cards on a thermal printer. It leverages a local LLM agent to understand natural language commands and execute complex workflows.
+**LifeOS** is an intelligent Telegram-based personal assistant powered by an agentic AI architecture. It manages tasks (physical prints), notes, finances, calendar, email, and automations through natural conversation.
 
 ## 🚀 Features
 
-*   **Intelligent Agent:** A smart CLI agent that understands natural language context and intent.
-*   **Task Management:** Create, update, list, and complete tasks.
-*   **Note Taking:** Create, read, update, and search notes with fuzzy matching.
-*   **Finance Tracking:** Log transactions and check balances (basic implementation).
-*   **Calendar Integration:** (Planned/Partial) Interface with Google Calendar.
-*   **Web Browsing & Search:** Search the web and browse content directly from the CLI.
-*   **🖨️ Thermal Printer Integration:**
-    *   Print task cards directly to a **TSC DA200** (or compatible TSPL) thermal printer.
-    *   **Style Support:** Choose between "Handwritten" and "Urgent" styles.
-    *   **Smart Parsing:** Automatically determines importance and style from your command.
-    *   **Calibrated Output:** Pixel-perfect alignment for 58mm labels.
+### Core Capabilities
+- **Intelligent Agentic Architecture**: Master Agent orchestrates specialized sub-agents for different domains
+- **Fast-Path Routing**: Simple requests skip planning for instant responses
+- **Voice & Image Processing**: Send voice notes or photos for transcription and analysis
+- **Physical Task Printing**: Print task cards on a TSC DA200 thermal printer
+
+### Domains Covered
+- 📝 **Notes & Memory**: Remember information, create notes, search memories
+- 💰 **Finance**: Track loans and debts (who owes whom)
+- 📅 **Calendar**: Events, reminders with Telegram notifications
+- 📧 **Email**: Read and send Gmail
+- 🔄 **Automations**: Scheduled/recurring actions (daily prints, weekly reminders)
+- 🌐 **Web Search**: Search and browse the web
+- 🖨️ **Thermal Printer**: Print task cards with handwritten/urgent styles
 
 ## 🛠️ Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Astrobubu/LifeOS.git
-    cd LifeOS
-    ```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Astrobubu/LifeOS.git
+   cd LifeOS
+   ```
 
-2.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *Note: You may need to install `pywin32` manually if on Windows.*
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3.  **Environment Setup:**
-    *   Create a `.env` file based on your API keys (OpenAI, Telegram, etc.).
-    *   Ensure your TSC Printer driver is installed and named `"TSC DA200"` (or update `printer_control/print_task.py`).
+3. **Configure environment:**
+   Create a `.env` file with:
+   ```
+   TELEGRAM_BOT_TOKEN=your_bot_token
+   ALLOWED_USER_IDS=your_telegram_user_id
+   OPENAI_API_KEY=your_openai_key
+   OPENAI_MODEL=gpt-4o-mini
+   ```
 
-## 🎮 Usage
+4. **Run the bot:**
+   ```bash
+   python main.py
+   ```
 
-Run the main application:
-```bash
-python main.py
-```
+## 📱 Telegram Commands
 
-### Example Commands
+| Command | Description |
+|---------|-------------|
+| `/start` | Initialize the bot |
+| `/help` | Show help text |
+| `/clear` | Clear conversation history |
+| `/stats` | Show memory statistics |
+| `/automations` | List scheduled automations |
+| `/cost` | Show API usage costs |
 
-*   **Tasks:** "Add a task to buy groceries."
-*   **Notes:** "Create a note about my meeting with John."
-*   **Printing:**
-    *   "Print a task: Call Mom."
-    *   "Print an urgent task: Server Down!" (Sets importance to High/3).
-    *   "Print a note to pick up dry cleaning."
+## 💬 Example Interactions
+
+- `"Print buy milk"` → Prints task card immediately
+- `"Remind me at 3pm to call mom"` → Creates calendar reminder
+- `"I owe dad 100"` → Records loan
+- `"Every morning print my schedule"` → Creates daily automation
+- `"Reprint laundry"` → Runs existing automation
+- `"Remember that Sarah's birthday is March 5th"` → Stores memory
 
 ## 📂 Project Structure
 
-*   `agent/`: Core logic for the Smart Agent and prompts.
-*   `tools/`: Tool definitions (Tasks, Notes, Printer, etc.) exposed to the agent.
-*   `printer_control/`: **The Crown Jewel.**
-    *   Scripts for controlling the thermal printer via raw TSPL commands.
-    *   HTML templates for rendering task cards.
-    *   Calibration tools (`ui_alignment.py`) for perfect print margins.
-*   `storage/`: JSON and Markdown storage for user data.
-*   `utils/`: Helper utilities for costs and UI.
+```
+LifeOS/
+├── agent/              # Agentic AI architecture
+│   ├── master_agent.py   # Orchestrator with planning
+│   ├── smart_agent.py    # Entry point with fast-path
+│   └── sub_agents/       # Domain-specific agents
+├── bot/                # Telegram bot handlers
+├── tools/              # Tool implementations
+├── printer_control/    # Thermal printer drivers
+├── memory/             # Vector memory system
+├── storage/            # JSON data storage
+└── config/             # Settings and configuration
+```
 
-## 🖨️ Printer Calibration (Deep Dive)
+## 🖨️ Printer Setup
 
-The `printer_control` module is highly tuned for **58mm continuous rolls**.
-
-*   **`print_task.py`**: The main driver. Usage: `python printer_control/print_task.py "Text" <Importance 1-3> <Style>`
-*   **`ui_alignment.py`**: A GUI tool to manually tweak X/Y offsets, speed, and density in real-time.
-*   **`task_renderer.py`**: Renders HTML templates to 1-bit monochrome bitmaps for the printer.
-
-## 🤝 Contributing
-
-Feel free to fork, submit PRs, or suggest new "Styles" for the printer templates!
+For TSC DA200 (or compatible TSPL) printers:
+1. Install printer driver
+2. Name the printer "TSC DA200" in Windows
+3. Use `printer_control/ui_alignment.py` to calibrate
 
 ---
-*Built with ❤️ (and a lot of thermal paper).*
+*Built with ❤️ and a lot of thermal paper.*

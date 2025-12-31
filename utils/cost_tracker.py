@@ -87,6 +87,21 @@ class CostTracker:
             "days_tracked": len(self.data["by_date"])
         }
     
+    def get_stats(self) -> dict:
+        """Get stats formatted for /cost command"""
+        today = self.get_today_stats()
+        total = self.get_total_stats()
+        return {
+            "today": {
+                "tokens": today.get("input", 0) + today.get("output", 0),
+                "cost": today.get("cost", 0.0)
+            },
+            "total": {
+                "tokens": total["total_input_tokens"] + total["total_output_tokens"],
+                "cost": total["total_cost"]
+            }
+        }
+    
     def get_summary(self) -> str:
         """Get formatted summary"""
         today = self.get_today_stats()

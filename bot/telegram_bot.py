@@ -220,6 +220,55 @@ Tips:
 - "search for..." for web search"""
 
 
+async def automations_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle /automations command - list all scheduled automations"""
+    if not is_authorized(update.effective_user.id):
+        return
+    
+    user_id = update.effective_user.id
+    track_message(user_id, update.message.message_id)
+    
+    from tools import get_tool
+    automations_tool = get_tool("automations")
+    result = await automations_tool.execute("list_automations", {})
+    
+    if result.success:
+        text = f"📅 Scheduled Automations\n\n{result.data}"
+    else:
+        text = f"❌ Could not load automations: {result.error}"
+    
+    msg = await update.message.reply_text(text, parse_mode=None)
+    track_message(user_id, msg.message_id)
+
+
+async def cost_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle /cost command - show API usage costs"""
+    if not is_authorized(update.effective_user.id):
+        return
+    
+    user_id = update.effective_user.id
+    track_message(user_id, update.message.message_id)
+    
+    from utils.cost_tracker import cost_tracker
+    
+    stats = cost_tracker.get_stats()
+    today = stats.get("today", {})
+    total = stats.get("total", {})
+    
+    text = f"""💰 API Usage Costs
+
+Today:
+- Tokens: {today.get('tokens', 0):,}
+- Cost: ${today.get('cost', 0):.4f}
+
+All Time:
+- Tokens: {total.get('tokens', 0):,}
+- Cost: ${total.get('cost', 0):.4f}
+"""
+    
+    msg = await update.message.reply_text(text, parse_mode=None)
+    track_message(user_id, msg.message_id)
+
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle button presses"""
     query = update.callback_query
@@ -626,6 +675,8 @@ def run_bot():
     app.add_handler(CommandHandler("clear", clear_command))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("automations", automations_command))
+    app.add_handler(CommandHandler("cost", cost_command))
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))

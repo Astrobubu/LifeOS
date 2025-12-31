@@ -10,3 +10,7 @@ test_height.png
 printer_control/energy_graph.png
 backups/
 storage/usage_costs.json
+*.log
+err.log
+out.log
+bot.log
