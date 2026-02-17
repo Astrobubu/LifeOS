@@ -78,6 +78,14 @@ class FinanceTool(BaseTool):
                 description="Get summary of all loans - totals owed and owing",
                 parameters={},
                 required=[]
+            ),
+            self._make_schema(
+                name="get_person_loans",
+                description="Get all loan entries for a specific person with full details (amounts, notes, dates, IDs). Use this when the user asks about loans with a specific person.",
+                parameters={
+                    "person": {"type": "string", "description": "Person name (case-insensitive match)"}
+                },
+                required=["person"]
             )
         ]
     
@@ -93,6 +101,8 @@ class FinanceTool(BaseTool):
                 return await self._update_loan(**arguments)
             elif function_name == "get_loan_summary":
                 return await self._get_summary()
+            elif function_name == "get_person_loans":
+                return await self._get_person_loans(**arguments)
             else:
                 return ToolResult(success=False, error=f"Unknown function: {function_name}")
         except Exception as e:
@@ -162,13 +172,62 @@ class FinanceTool(BaseTool):
     async def _get_summary(self) -> ToolResult:
         loans = self._load_loans()
         active = [l for l in loans if l["status"] == "active"]
-        
-        i_owe_total = sum(l["amount"] for l in active if l["direction"] == "i_owe")
-        they_owe_total = sum(l["amount"] for l in active if l["direction"] == "they_owe")
-        
-        summary = f"""Loan Summary:
-You owe others: ${i_owe_total:.2f}
-Others owe you: ${they_owe_total:.2f}
-Net: ${they_owe_total - i_owe_total:+.2f}"""
-        
-        return ToolResult(success=True, data=summary)
+
+        # Per-person breakdown
+        i_owe_by_person: dict[str, float] = {}
+        they_owe_by_person: dict[str, float] = {}
+
+        for loan in active:
+            person = loan.get("person", "Unknown")
+            amount = loan.get("amount", 0)
+            if loan["direction"] == "i_owe":
+                i_owe_by_person[person] = i_owe_by_person.get(person, 0) + amount
+            else:
+                they_owe_by_person[person] = they_owe_by_person.get(person, 0) + amount
+
+        i_owe_total = sum(i_owe_by_person.values())
+        they_owe_total = sum(they_owe_by_person.values())
+
+        lines = [f"Loan Summary:"]
+        if i_owe_by_person:
+            lines.append(f"\nYou owe others: ${i_owe_total:.2f}")
+            for person, amount in sorted(i_owe_by_person.items()):
+                lines.append(f"  - {person}: ${amount:.2f}")
+        if they_owe_by_person:
+            lines.append(f"\nOthers owe you: ${they_owe_total:.2f}")
+            for person, amount in sorted(they_owe_by_person.items()):
+                lines.append(f"  - {person}: ${amount:.2f}")
+
+        lines.append(f"\nNet: ${they_owe_total - i_owe_total:+.2f}")
+        return ToolResult(success=True, data="\n".join(lines))
+
+    async def _get_person_loans(self, person: str) -> ToolResult:
+        loans = self._load_loans()
+        person_loans = [l for l in loans if l.get("person", "").lower() == person.lower()]
+
+        if not person_loans:
+            return ToolResult(success=True, data=f"No loans found for {person}")
+
+        active = [l for l in person_loans if l["status"] == "active"]
+        settled = [l for l in person_loans if l["status"] == "settled"]
+
+        lines = [f"Loans with {person}:"]
+
+        if active:
+            i_owe = sum(l["amount"] for l in active if l["direction"] == "i_owe")
+            they_owe = sum(l["amount"] for l in active if l["direction"] == "they_owe")
+            lines.append(f"\nActive total: You owe ${i_owe:.2f} | They owe ${they_owe:.2f}")
+            lines.append(f"\nActive entries ({len(active)}):")
+            for loan in active:
+                dir_text = "You owe" if loan["direction"] == "i_owe" else "They owe"
+                date = loan.get("created_at", "")[:10]
+                note = f" - {loan['note']}" if loan.get("note") else ""
+                lines.append(f"  [{loan['id']}] ${loan['amount']:.2f} ({dir_text}) {date}{note}")
+
+        if settled:
+            lines.append(f"\nSettled entries ({len(settled)}):")
+            for loan in settled:
+                date = loan.get("created_at", "")[:10]
+                lines.append(f"  [{loan['id']}] ${loan['amount']:.2f} - settled {loan.get('settled_at', '')[:10]}")
+
+        return ToolResult(success=True, data="\n".join(lines))

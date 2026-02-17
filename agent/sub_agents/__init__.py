@@ -1,24 +1,21 @@
-"""Sub-agents package - Autonomous agents for each domain"""
-from .base_sub_agent import BaseSubAgent
+"""Sub-agents package - Autonomous agents for each domain (v2)"""
+from .base_sub_agent import BaseSubAgent, SubAgentResult
 from .finance_agent import FinanceSubAgent
-from .tasks_agent import TasksSubAgent
 from .calendar_agent import CalendarSubAgent
 from .email_agent import EmailSubAgent
-from .notes_agent import NotesSubAgent
-from .web_agent import WebResearchSubAgent
 from .print_agent import PrintSubAgent
 from .automations_agent import AutomationsSubAgent
 from .memory_agent import MemorySubAgent
+from .general_agent import GeneralSubAgent
 
 __all__ = [
     "BaseSubAgent",
+    "SubAgentResult",
     "FinanceSubAgent",
-    "TasksSubAgent",
     "CalendarSubAgent",
     "EmailSubAgent",
-    "NotesSubAgent",
-    "WebResearchSubAgent",
     "PrintSubAgent",
     "AutomationsSubAgent",
     "MemorySubAgent",
+    "GeneralSubAgent",
 ]

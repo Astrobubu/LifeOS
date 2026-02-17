@@ -9,7 +9,6 @@ class Settings:
     BASE_DIR = Path(__file__).parent.parent
     STORAGE_DIR = BASE_DIR / "storage"
     MEMORIES_DIR = STORAGE_DIR / "memories"
-    NOTES_DIR = STORAGE_DIR / "notes"
     TASKS_DIR = STORAGE_DIR / "tasks"
     
     # Telegram
@@ -37,7 +36,7 @@ class Settings:
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
     
     # Bot settings
-    BOT_NAME = os.getenv("BOT_NAME", "LifeOS")
+    BOT_NAME = os.getenv("BOT_NAME", "HAL 9000")
     
     # Memory settings
     MAX_CONTEXT_MEMORIES = 10
@@ -49,7 +48,7 @@ class Settings:
     
     def _ensure_directories(self):
         """Create storage directories if they don't exist"""
-        for dir_path in [self.MEMORIES_DIR, self.NOTES_DIR, self.TASKS_DIR]:
+        for dir_path in [self.MEMORIES_DIR, self.TASKS_DIR]:
             dir_path.mkdir(parents=True, exist_ok=True)
     
     def validate(self) -> list[str]:

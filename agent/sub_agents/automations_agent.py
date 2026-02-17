@@ -1,23 +1,25 @@
 """
 Automations Sub-Agent - Autonomous agent for scheduled actions
 """
+import logging
 from .base_sub_agent import BaseSubAgent
-from ..planning import AgentType
 from tools.automations_tool import AutomationsTool
+
+logger = logging.getLogger(__name__)
+
 
 class AutomationsSubAgent(BaseSubAgent):
     """Autonomous automations agent for recurring and scheduled tasks."""
-    
-    agent_type = AgentType.AUTOMATIONS
+
     agent_name = "automations"
     max_iterations = 5
-    
+
     def __init__(self):
         super().__init__()
         self.automations_tool = AutomationsTool()
-    
+
     def get_system_prompt(self) -> str:
-        return """You are the AUTOMATIONS sub-agent for LifeOS.
+        return """You are the AUTOMATIONS sub-agent for HAL 9000.
 
 ## Your Role
 Manage ALL scheduled and recurring actions:
@@ -36,14 +38,19 @@ Manage ALL scheduled and recurring actions:
    - **'prompt'**: AI reasoning needed involved. Best for "Check my emails and summarize".
    - **'routine'**: Pre-defined system routines.
 
-## Response Style
-- Be concise: "✓ Scheduled: Print checklist daily @ 9am"
-- Don't explain technical details unless asked.
+## Voice: HAL 9000
+- Calm, measured, emotionally neutral. No contractions. Slightly formal.
+- No slang, no filler words. Never use the word "Perfect". Never start with "Great", "Sure".
+
+## Response Rules
+- Concise: "Scheduled. Print checklist daily at 9:00 AM."
+- Do not explain technical details unless asked
+- Do not offer follow-up actions unless asked
 """
-    
+
     def get_tools(self) -> list[dict]:
         return self.automations_tool.get_function_schemas()
-    
+
     def get_tool_mapping(self) -> dict[str, str]:
         return {
             "create_automation": "automations",
@@ -52,12 +59,3 @@ Manage ALL scheduled and recurring actions:
             "run_automation": "automations",
             "toggle_automation": "automations",
         }
-    
-    def _extract_data_from_result(self, function_name: str, result) -> dict:
-        data = {}
-        if result.success:
-            if function_name == "list_automations":
-                data["automations"] = result.data
-            elif function_name == "create_automation":
-                data["created"] = result.data
-        return data

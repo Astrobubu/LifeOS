@@ -14,3 +14,5 @@ storage/usage_costs.json
 err.log
 out.log
 bot.log
+backup_v1/
+mcp.json
